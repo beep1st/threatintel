@@ -2,7 +2,7 @@
 
 ### Cyber Threat Intelligence & Analysis Platform
 
-ThreatIntel brings security news, indicators of compromise, vulnerability records, and threat actor intelligence into one Django-based workspace. It helps users explore emerging threats, understand adversary techniques, and prioritize intelligence through contextual risk scores and AI-assisted summaries.
+TIARF brings security news, indicators of compromise, vulnerability records, and threat actor intelligence into one Django-based workspace. It helps users explore emerging threats, understand adversary techniques, and prioritize intelligence through contextual risk scores and AI-assisted summaries.
 
 Built as a **final year project**, the platform connects information from multiple sources so users can move from a broad threat overview to the actors, techniques, tools, and indicators behind it.
 
@@ -12,7 +12,7 @@ Built as a **final year project**, the platform connects information from multip
 
 ## Overview
 
-Threat intelligence is often scattered across research blogs, reputation services, vulnerability repositories, and adversary knowledge bases. ThreatIntel brings these sources together in an interface designed for investigation and exploration.
+Threat intelligence is often scattered across research blogs, reputation services, vulnerability repositories, and adversary knowledge bases. TIARF brings these sources together in an interface designed for investigation and exploration.
 
 A typical workflow starts with reviewing recent intelligence on the dashboard, filtering it by topic or time period, and opening an article or entity for more context. Users can then explore related threat actors, browse MITRE ATT&CK techniques, inspect indicator records, or use the chatbot to query supported intelligence topics.
 
@@ -298,6 +298,6 @@ Keep credentials and collected local data out of commits and screenshots. The re
 
 ## Acknowledgments and licensing
 
-ThreatIntel builds on the work of the Django and Python communities and the intelligence made available through MITRE ATT&CK, MISP Galaxy, CVEProject, abuse.ch, AbuseIPDB, OTX, and security researchers and publishers.
+TIARF builds on the work of the Django and Python communities and the intelligence made available through MITRE ATT&CK, MISP Galaxy, CVEProject, abuse.ch, AbuseIPDB, OTX, and security researchers and publishers.
 
 Third-party datasets, models, and bundled interface assets remain subject to their respective terms. This repository currently has no project-level license file; no MIT or other project license is claimed here.
