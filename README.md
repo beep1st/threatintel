@@ -296,8 +296,12 @@ The committed settings enable `DEBUG` and allow all hosts. Some application endp
 
 Keep credentials and collected local data out of commits and screenshots. The repository contains application code and assets, not the original working database or model caches.
 
-## Acknowledgments and licensing
+## Acknowledgments
 
-TIARF builds on the work of the Django and Python communities and the intelligence made available through MITRE ATT&CK, MISP Galaxy, CVEProject, abuse.ch, AbuseIPDB, OTX, and security researchers and publishers.
+TIARF builds on the work of the Django and Python communities and the threat intelligence provided by MITRE ATT&CK, MISP Galaxy, CVEProject, abuse.ch, AbuseIPDB, OTX, and security researchers and publishers.
 
-Third-party datasets, models, and bundled interface assets remain subject to their respective terms. This repository currently has no project-level license file; no MIT or other project license is claimed here.
+## License
+
+This project's original source code is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
+
+Third-party datasets, models, libraries, and bundled interface assets remain subject to their respective licenses and terms.
