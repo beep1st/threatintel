@@ -1,4 +1,4 @@
-# ThreatIntel
+# Threat Intelligence Aggregation and Reporting Framework (TIARF)
 
 ### Cyber Threat Intelligence & Analysis Platform
 
