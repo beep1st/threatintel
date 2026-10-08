@@ -1,4 +1,4 @@
-<img width="1492" height="902" alt="TIARF5" src="https://github.com/user-attachments/assets/1a1f51bf-cd8b-4815-aadf-db2012fbfb10" /><img width="1862" height="900" alt="TIARF6" src="https://github.com/user-attachments/assets/1f181c9c-65a2-4f1b-92c2-36217bbec840" /># ThreatIntel
+# ThreatIntel
 
 ### Cyber Threat Intelligence & Analysis Platform
 
