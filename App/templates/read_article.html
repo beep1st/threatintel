@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ article.title }} - TIARF</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+    }
+    .navbar {
+      background: #000 !important;
+      border-bottom: 1px solid #333;
+    }
+    .article-header {
+      background: linear-gradient(135deg, #111, #000);
+      padding: 4rem 0 2rem;
+      border-bottom: 1px solid #333;
+    }
+    .article-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: white;
+    }
+    .meta {
+      color: #aaa;
+      font-size: 1.1rem;
+    }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+    }
+    .summary-card {
+      border-left: 5px solid #ff4444;
+    }
+    .entity-badge {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      color: #e0e0e0;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      margin: 0.3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    .ioc-item {
+      background: #222;
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 0.5rem;
+      word-break: break-all;
+    }
+    .btn-ai {
+      background: #ff4444;
+      border: none;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .spinner {
+      width: 1.4rem;
+      height: 1.4rem;
+      border: 3px solid #444;
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .ai-status {
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .ai-status-processing {
+      background: rgba(255, 68, 68, 0.15);
+      border-left: 4px solid #ff4444;
+      color: #ff9999;
+    }
+    .ai-status-complete {
+      background: rgba(0, 255, 136, 0.15);
+      border-left: 4px solid #00ff88;
+      color: #99ffcc;
+    }
+    .ai-status-error {
+      background: rgba(255, 0, 0, 0.15);
+      border-left: 4px solid #ff0000;
+      color: #ff9999;
+    }
+    .spinner-sm {
+      width: 1rem;
+      height: 1rem;
+      border-width: 2px;
+    }
+   
+    .alert-improved {
+      background: rgba(255, 68, 68, 0.1);
+      border: 1px solid rgba(255, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+   
+    .extensions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+   
+    .extension-badge {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      font-family: 'Courier New', monospace;
+      color: #ff9999;
+    }
+   
+    .entity-section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #333;
+    }
+   
+    .entity-section:last-child {
+      border-bottom: none;
+    }
+   
+    .nav-pills .nav-link {
+      background: #1a1a1a;
+      color: #aaa;
+      border: 1px solid #333;
+      margin-right: 0.5rem;
+      border-radius: 8px;
+    }
+   
+    .nav-pills .nav-link.active {
+      background: #ff4444;
+      color: white;
+      border-color: #ff4444;
+    }
+   
+    .tech-tag {
+      background: rgba(0, 150, 255, 0.1);
+      border: 1px solid rgba(0, 150, 255, 0.3);
+      color: #66ccff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin: 0.2rem;
+    }
+   
+    .timeline-item {
+      position: relative;
+      padding-left: 2rem;
+      margin-bottom: 1rem;
+    }
+   
+    .timeline-item:before {
+      content: '';
+      position: absolute;
+      left: 0.5rem;
+      top: 0.5rem;
+      width: 8px;
+      height: 8px;
+      background: #ff4444;
+      border-radius: 50%;
+    }
+   
+    .timeline-item:after {
+      content: '';
+      position: absolute;
+      left: 0.9rem;
+      top: 1.3rem;
+      width: 2px;
+      height: calc(100% - 0.8rem);
+      background: #333;
+    }
+   
+    .timeline-item:last-child:after {
+      display: none;
+    }
+   
+    /* Responsive Enhancements */
+    @media (max-width: 768px) {
+      .article-header {
+        padding: 2rem 0 1.5rem;
+      }
+     
+      .article-title {
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+     
+      .meta {
+        font-size: 1rem;
+      }
+     
+      .nav-pills .nav-link {
+        margin-right: 0.25rem;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+      }
+     
+      .extensions-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.25rem;
+      }
+     
+      .extension-badge {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.6rem;
+      }
+     
+      .entity-badge {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        margin: 0.2rem;
+      }
+     
+      .timeline-item {
+        padding-left: 1.5rem;
+      }
+     
+      .timeline-item:before {
+        left: 0.25rem;
+        width: 6px;
+        height: 6px;
+      }
+     
+      .timeline-item:after {
+        left: 0.65rem;
+        width: 1px;
+      }
+     
+      .ioc-item {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+      }
+     
+      .tech-tag {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.6rem;
+        margin: 0.15rem;
+      }
+     
+      .ai-status {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+      }
+     
+      .navbar .container {
+        padding: 0 1rem;
+      }
+     
+      .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+     
+      .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+     
+      .entities-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+      }
+     
+      .entity-badge {
+        flex: 1 1 auto;
+        min-width: 100px;
+        max-width: calc(50% - 0.25rem);
+        text-align: center;
+      }
+    }
+   
+    @media (max-width: 576px) {
+      .article-header {
+        padding: 1.5rem 0 1rem;
+      }
+     
+      .article-title {
+        font-size: 1.75rem;
+      }
+     
+      .meta {
+        font-size: 0.95rem;
+      }
+     
+      .extensions-grid {
+        grid-template-columns: 1fr;
+      }
+     
+      .entity-section h6 {
+        font-size: 1.1rem;
+      }
+     
+      .nav-pills {
+        flex-direction: column;
+      }
+     
+      .nav-pills .nav-link {
+        margin-right: 0;
+        margin-bottom: 0.25rem;
+      }
+     
+      .entity-badge {
+        min-width: 100%;
+        max-width: 100%;
+      }
+    }
+   
+    .container {
+      max-width: 80%;
+      padding: 0 1rem;
+    }
+   
+    .row > div.col-md-6 {
+      margin-bottom: 1rem;
+    }
+   
+    @media (max-width: 480px) {
+      .timeline-item {
+        padding-left: 1rem;
+      }
+     
+      .timeline-item:before {
+        left: 0;
+      }
+     
+      .timeline-item:after {
+        left: 0.35rem;
+      }
+     
+      .entity-badge {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a href="/" class="btn btn-outline-secondary btn-sm me-2">← Back to Dashboard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Header -->
+  <div class="article-header">
+    <div class="container">
+      <h1 class="article-title">{{ article.title }}</h1>
+      <div class="meta mt-3">
+        {{ article.published }} • {{ article.source }}
+      </div>
+    </div>
+  </div>
+  <div class="container my-5">
+    <div class="row g-4">
+      <!-- Main Content -->
+      <div class="col-12 col-lg-8">
+        <!-- AI Summary -->
+        <div class="card summary-card mb-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+              <h4 class="mb-0">
+                <span class="badge bg-danger text-white me-2">TIARF AI</span>
+                AI Summary
+              </h4>
+              <div id="ai-status-indicator" class="ai-status ai-status-processing mt-2 mt-md-0">
+                <i class="fas fa-spinner fa-spin me-2"></i>
+                <span id="ai-status-text">Analyzing article...</span>
+              </div>
+            </div>
+           
+            <!-- Tabs -->
+            <ul class="nav nav-pills mb-4" id="aiSummaryTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview-content" type="button">Overview</button>
+              </li>
+             
+            </ul>
+           
+            <!-- Tab Content -->
+            <div class="tab-content" id="aiSummaryContent">
+              <div class="tab-pane fade show active" id="overview-content" role="tabpanel">
+                <div id="ai-overview">
+                  <div class="text-center py-4">
+                    <div class="spinner mx-auto mb-3"></div>
+                    <p class="text-muted">Loading AI summary...</p>
+                  </div>
+                </div>
+              </div>
+             
+              
+            </div>
+          </div>
+        </div>
+        <!-- Article Content -->
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Article Content</h5>
+             <div class="mt-0">
+              <a href="{{ article.source_url }}" target="_blank" class="btn btn-outline-light">
+                <i class="fas fa-external-link-alt me-2"></i> Read Original Article
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="accordion" id="article-accordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="article-heading">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#article-collapse" aria-expanded="true" aria-controls="article-collapse">
+                    Click to expand and read the full article content
+                  </button>
+                </h2>
+                <div id="article-collapse" class="accordion-collapse collapse " aria-labelledby="article-heading">
+                  <div class="accordion-body">
+                    <div class="article-content" id="article-content">
+                      {{ article.content|linebreaks }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+           
+          </div>
+        </div>
+      </div>
+      <!-- Sidebar -->
+      <div class="col-12 col-lg-4">
+        <!-- Threat Intelligence Entities -->
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Threat Intelligence</h5>
+            <button class="btn btn-sm btn-outline-secondary" id="refresh-entities">
+              <i class="fas fa-redo"></i>
+            </button>
+          </div>
+          <div class="card-body">
+            <div id="dynamic-entities">
+              <div class="text-center py-3">
+                <div class="spinner spinner-sm mx-auto mb-2"></div>
+                <p class="text-muted small">Loading entities...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Article Details -->
+        <div class="card">
+          <div class="card-header">
+            <h5>Article Details</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <strong>Source:</strong>
+              <span class="float-end">{{ article.source|default:"Unknown" }}</span>
+            </div>
+           
+            <div class="mb-3">
+              <strong>Published:</strong>
+              <span class="float-end">{{ article.published }}</span>
+            </div>
+           
+            <div class="mb-3">
+              <strong>Content Length:</strong>
+              <span class="float-end">
+                {% if article.content %}
+                  {{ article.content|length }} characters
+                {% else %}
+                  <span class="text-muted">Unknown</span>
+                {% endif %}
+              </span>
+            </div>
+           
+            <div class="mb-3">
+              <strong>Entities Detected:</strong>
+              <span class="float-end">
+                {% with entities.actors|add:entities.attacks|add:entities.campaigns|add:entities.industries|add:entities.countries|add:entities.cves as total_entities %}
+                  {{ total_entities|length }}
+                {% endwith %}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="text-center py-4 text-muted small border-top border-secondary">
+    Powered by TIARF  • Real-time Threat Intelligence
+  </footer>
+  <!-- Bootstrap Bundle (only once) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      const djangoEntities = {{ entities|safe }};
+      // Start AI analysis
+      generateAIAnalysis();
+      // Initialize Bootstrap tabs
+      document.querySelectorAll('#aiSummaryTabs button').forEach(triggerEl => {
+        new bootstrap.Tab(triggerEl);
+      });
+      // Refresh entities button
+      $('#refresh-entities').click(function() {
+        extractAndDisplayEntities($("#article-content").text());
+        $(this).find('i').addClass('fa-spin');
+        setTimeout(() => $(this).find('i').removeClass('fa-spin'), 1000);
+      });
+      function generateAIAnalysis() {
+        const content = $("#article-content").text().substring(0, 3500);
+        const title = $(".article-title").text().trim();
+        const statusIndicator = $("#ai-status-indicator");
+        statusIndicator.removeClass().addClass("ai-status ai-status-processing");
+        statusIndicator.html('<i class="fas fa-spinner fa-spin me-2"></i><span id="ai-status-text">Analyzing article with AI...</span>');
+        $.get("/read-article-summary/", { text: content, title: title })
+          .done(function(data) {
+            processAIResponse(data);
+            statusIndicator.removeClass().addClass("ai-status ai-status-complete");
+            statusIndicator.html(`<i class="fas fa-check-circle me-2 text-success"></i><span id="ai-status-text">AI analysis complete</span>`);
+            extractAndDisplayEntities(content, data);
+          })
+          .fail(function() {
+            statusIndicator.removeClass().addClass("ai-status ai-status-error");
+            statusIndicator.html('<i class="fas fa-exclamation-circle me-2 text-danger"></i><span>AI analysis failed — using stored data</span>');
+            displayEntitiesFromDjango();
+          });
+      }
+      function processAIResponse(data) {
+        // Always show real AI summary — beautifully styled
+        let overviewHtml = `<div class="entity-section">
+          <h6 class="text-warning mb-3">
+            <i class="fas fa-brain me-2"></i>AI Executive Summary
+          </h6>
+          <div class="alert-improved">
+            <p class="mb-0">
+              ${data.executive_summary.replace(/^Executive Summary:?\s*/i, '').trim()}
+            </p>
+          </div>
+        </div>`;
+        let technicalHtml = generateTechnicalAnalysis(data, $("#article-content").text().toLowerCase());
+        $("#ai-overview").html(overviewHtml);
+        $("#ai-technical").html(technicalHtml);
+      }
+      function generateTechnicalAnalysis(data, content) {
+        let html = `<div class="entity-section">
+          <h6 class="text-warning mb-3">Technical Analysis</h6>`;
+        // IOCs
+        let iocsHtml = `<div class="mb-4"><strong class="text-danger">Indicators of Compromise:</strong>`;
+        let hasIOCs = false;
+        if (data.iocs && data.iocs !== "None detected" && data.iocs !== "None") {
+          const iocs = data.iocs.split(/[,;\n]/).map(i => i.trim()).filter(i => i);
+          if (iocs.length > 0) {
+            hasIOCs = true;
+            iocsHtml += `<div class="mt-2">`;
+            iocs.forEach(ioc => {
+              const type = detectIOCType(ioc);
+              iocsHtml += `<div class="ioc-item"><span class="badge bg-secondary me-2">${type}</span>${ioc}</div>`;
+            });
+            iocsHtml += `</div>`;
+          }
+        }
+        if (data.extracted_info?.extensions?.length > 0) {
+          hasIOCs = true;
+          iocsHtml += `<div class="mt-3">
+            <p class="small text-muted mb-2">Malicious Extensions Detected:</p>
+            <div class="extensions-grid">`;
+          data.extracted_info.extensions.slice(0, 8).forEach(ext => {
+            iocsHtml += `<div class="extension-badge">${ext}</div>`;
+          });
+          if (data.extracted_info.extensions.length > 8) {
+            iocsHtml += `<div class="extension-badge text-muted">+${data.extracted_info.extensions.length - 8} more</div>`;
+          }
+          iocsHtml += `</div></div>`;
+        }
+        if (!hasIOCs) {
+          iocsHtml += `<div class="text-muted small mt-2">No specific indicators of compromise identified.</div>`;
+        }
+        iocsHtml += `</div>`;
+        html += iocsHtml;
+        // Techniques
+        const techniques = extractTechniques(content);
+        if (techniques.length > 0) {
+          html += `<div class="mt-3">
+            <strong class="text-info">Techniques Used:</strong>
+            <div class="mt-2">`;
+          techniques.forEach(tech => html += `<span class="tech-tag">${tech}</span>`);
+          html += `</div></div>`;
+        }
+        // Suspicious Domains
+        if (data.extracted_info?.domains?.length > 0) {
+          html += `<div class="mt-3">
+            <strong class="text-warning">Suspicious Domains:</strong>
+            <div class="mt-2">`;
+          data.extracted_info.domains.slice(0, 5).forEach(d => html += `<div class="ioc-item">${d}</div>`);
+          if (data.extracted_info.domains.length > 5) {
+            html += `<div class="text-muted small mt-2">+${data.extracted_info.domains.length - 5} more</div>`;
+          }
+          html += `</div></div>`;
+        }
+        html += `</div>`;
+        return html;
+      }
+      function detectIOCType(ioc) {
+        if (ioc.match(/^CVE-\d{4}-\d+/)) return "CVE";
+        if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ioc)) return "IP";
+        if (/^[a-f0-9]{32,64}$/i.test(ioc)) return "Hash";
+        if (ioc.includes('.') && ioc.length > 3) return "Domain";
+        return "Indicator";
+      }
+      function extractTechniques(content) {
+        const techs = [];
+        if (content.includes("steganography")) techs.push("Steganography");
+        if (content.includes("obfuscation")) techs.push("Code Obfuscation");
+        if (content.includes("persistent")) techs.push("Persistence");
+        if (content.includes("loader")) techs.push("Malware Loader");
+        if (content.includes("backdoor")) techs.push("Backdoor");
+        if (content.includes("evasion")) techs.push("Evasion");
+        if (content.includes("privilege")) techs.push("Privilege Escalation");
+        if (content.includes("phishing")) techs.push("Phishing");
+        if (content.includes("ransomware")) techs.push("Ransomware");
+        if (content.includes("malware")) techs.push("Malware Delivery");
+        return techs.slice(0, 6);
+      }
+      function displayEntitiesFromDjango() {
+        let html = `<div class="row g-2">`;
+        const sections = [
+          {key: 'actors', title: 'Threat Actors', color: 'danger'},
+          {key: 'attacks', title: 'Attack Types', color: 'warning'},
+          {key: 'campaigns', title: 'Campaigns', color: 'info'},
+          {key: 'industries', title: 'Targeted Industries', color: 'success'},
+          {key: 'countries', title: 'Countries', color: 'primary'},
+          {key: 'cves', title: 'CVEs', color: 'danger'}
+        ];
+        sections.forEach(sec => {
+          if (djangoEntities[sec.key]?.length > 0) {
+            html += `<div class="col-12 col-md-6 mb-3">
+              <strong class="d-block mb-2 text-${sec.color}">${sec.title}</strong>
+              <div class="entities-container">`;
+            djangoEntities[sec.key].slice(0, sec.key === 'cves' ? 3 : 5).forEach(item => {
+              html += `<span class="entity-badge bg-${sec.color} text-white">${item}</span>`;
+            });
+            html += `</div></div>`;
+          }
+        });
+        html += `</div>`;
+        $("#dynamic-entities").html(html);
+      }
+      function extractAndDisplayEntities(content, aiData) {
+        displayEntitiesFromDjango();
+        // Optional AI-detected CVEs
+        if (aiData?.iocs && aiData.iocs !== "None detected") {
+          const cves = [...new Set(aiData.iocs.match(/\b(CVE-\d{4}-\d{4,7})\b/gi) || [])];
+          if (cves.length > 0 && (!djangoEntities.cves || djangoEntities.cves.length === 0)) {
+            let cvesHtml = `<div class="col-12 col-md-6 mb-3">
+              <strong class="d-block mb-2 text-danger">CVEs (AI Detected)</strong>
+              <div class="entities-container">`;
+            cves.slice(0, 3).forEach(cve => cvesHtml += `<span class="entity-badge bg-danger text-white">${cve}</span>`);
+            cvesHtml += `</div></div>`;
+            $("#dynamic-entities .row").append(cvesHtml);
+          }
+        }
+      }
+      // Initial load
+      displayEntitiesFromDjango();
+    });
+  </script>
+</body>
+</html>

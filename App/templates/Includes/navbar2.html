@@ -1,0 +1,126 @@
+{% load static %}
+<!-- Topbar -->
+<section class="topbar d-none d-lg-block">
+    <div class="d-flex justify-content-between align-items-center bg-dark text-white p-2">
+        <div class="d-flex align-items-center px-1">
+            <i class="fas fa-envelope me-2 text-primary"></i>
+            <span>info@isol.pk</span>
+            <i class="fas fa-map-marker-alt ms-4 me-2 text-primary"></i>
+            <span>Punjab Small Industrial State, Kacha Jail Road Lahore </span>
+        </div>
+        <div class="px-1">
+            <a href="https://www.facebook.com/IsolPaki" class="text-decoration-none text-white me-3"><i class="fa-brands fa-square-facebook fs-4 text-white"></i></a>
+            {% comment %} <a href="#" class="text-white"><i class="fa-brands fa-square-whatsapp fs-4 text-white"></i></a> {% endcomment %}
+        </div>
+    </div>
+</section>
+
+<!-- Navbar -->
+<section class="topbottom">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-3">
+        <div class="container-fluid py-0">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand d-flex align-items-center text-start" href="{% url 'home' %}" id="first-ul">
+                    <div style="width: 160px; height: 80px;">
+                         <img
+                id="img"
+                src="{% static 'Images/rename.png' %}"
+                alt="Logo"
+                class="d-none d-md-block"
+                style="width: 290px; height: 80px; object-fit: cover; margin-top: 1px;"
+            />
+             <img
+                id="img"
+                src="{% static 'Images/rename.png' %}"
+                alt="Logo"
+                class="d-block d-md-none"
+                style="width: 200px; height: 80px; object-fit: cover; margin-top: 1px;"
+            />
+                    </div>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center order-lg-2">
+                <div class="d-flex nav-item dropdown me-3">
+                    {% comment %} <a class="nav-link navbar-icon cart-icon mx-1 d-block d-md-none" href="#" id="cartIconSm">
+  <i class="bi bi-cart fs-3 fw-bold"></i>
+  <span class="cartCount badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+</a> {% endcomment %}
+                    <a class="nav-link dropdown-toggle navbar-icon fs-3 fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person"></i>
+                    </a>
+                    <ul class="dropdown-menu custom-dropdown" aria-labelledby="navbarDropdown">
+                        {% if request.user.is_authenticated %}
+                            <li><p class="dropdown-item">{{ request.user.username }}</p></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><p class="dropdown-item">{{ request.user.email }}</p></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a  class="dropdown-item" href="{% url 'order_history' %}">View History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        {% else %}
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarContent"
+                    aria-controls="navbarContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-start text-center">
+                    <li class="nav-item" id="first-ul1">
+                        <a class="nav-link mx-3" href="{% url 'home' %}">Home</a>
+                    </li>
+                   <li class="nav-item" id="first-ul1">
+                        <a class="nav-link mx-3" href="{% url 'project' %}">Projects</a>
+                    </li>
+                     <li class="nav-item" id="first-ul1">
+                        <a class="nav-link mx-3" href="{% url 'product' %}">Product</a>
+                    </li>
+                    <li class="nav-item dropdown" id="first-ul1">
+                        <a class="nav-link dropdown-toggle mx-3" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'Electronicspage' %}">Electronics</a></li>
+                            <li><a class="dropdown-item" href="{% url 'AIpage' %}">AI Projects</a></li>
+                            <li><a class="dropdown-item" href="{% url 'Robotspage' %}">DIY Robots</a></li>
+                            <li><a class="dropdown-item" href="{% url 'softwarepage' %}">Software Projects</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'hardwarepage' %}">Hardware Projects</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item" id="first-ul1">
+                        <a class="nav-link mx-3" href="{% url 'contact' %}">Contact Us</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0 d-flex flex-row align-items-center">
+                    {% comment %} <li class="nav-item me-3 position-relative " >
+                         <a class="nav-link navbar-icon cart-icon d-none d-md-block" href="#" id="cartIconMd">
+  <i class="bi bi-cart fs-3 fw-bold"></i>
+  <span class="cartCount badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">0</span>
+</a>
+                    </li> {% endcomment %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+</section>
+<style>
+    .dropdown-menu-center {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+</style>

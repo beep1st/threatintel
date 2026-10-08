@@ -1,0 +1,668 @@
+<!-- tools_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tool.name }} - TIARF</title>
+    <!-- Add this to force cache refresh -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff8c00;
+            --danger-color: #ff4444;
+            --warning-color: #ffaa00;
+            --success-color: #00ff88;
+            --info-color: #44aaff;
+            --dark-bg: #1e1e1e;
+            --darker-bg: #141414;
+            --card-bg: #2d2d2d;
+            --border-color: #444;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+
+            --bg-main: #0b0f14;
+            --bg-panel: #111827;
+            --bg-hover: #1e293b;
+
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-accent: #60a5fa;
+
+            --border-subtle: #1f2937;
+            --danger: #ef4444;
+
+            --tool: #38bdf8;
+            --malware: #fb7185;
+            --dual-use: #ffc107;
+
+            --badge-bg: #1f2937;
+            --table-header: #020617;
+
+            --glow: 0 0 12px rgba(96,165,250,0.25);
+        }
+      
+        body {
+            background-color: var(--darker-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+      
+        /* Fix dropdown dark theme */
+        .dropdown-menu {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--border-color);
+        }
+        
+        .dropdown-item {
+            color: var(--text-primary) !important;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(11, 59, 114, 0.1) !important;
+            color: var(--info-color) !important;
+        }
+      
+        /* Navbar */
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--info-color) !important;
+        }
+        .nav-link {
+            color: var(--text-secondary) !important;
+            padding: 8px 16px !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--info-color) !important;
+            background: rgba(11, 59, 114, 0.1) !important;
+        }
+        .nav-link.active {
+            color: var(--info-color) !important;
+            font-weight: 600;
+        }
+      
+        .navbar-brand .danger-dot {
+            color: var(--danger-color);
+            margin-right: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #020617, #0b0f14);
+            color: var(--text-main);
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-accent);
+            text-decoration: none;
+            margin-bottom: 24px;
+            font-size: 14px;
+            padding: 8px 16px;
+            border: 1px solid var(--text-accent);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            background: var(--text-accent);
+            color: var(--bg-main);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .type-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tool-badge {
+            background: rgba(56,189,248,0.2);
+            color: var(--tool);
+            border: 1px solid var(--tool);
+        }
+
+        .malware-badge {
+            background: rgba(251,113,133,0.2);
+            color: var(--malware);
+            border: 1px solid var(--malware);
+        }
+
+        .dual-use-badge {
+            background: rgba(255,193,7,0.2);
+            color: var(--dual-use);
+            border: 1px solid var(--dual-use);
+        }
+
+        .category-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            background: rgba(96,165,250,0.1);
+            color: var(--text-accent);
+            border: 1px solid var(--text-accent);
+            margin-left: 8px;
+        }
+
+        .revoked {
+            color: var(--danger);
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .detail-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .detail-card h3 {
+            margin-top: 0;
+            color: var(---color)info;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-card h3 i {
+            color: var(--info-color);
+        }
+
+        .detail-card p {
+            margin: 8px 0;
+        }
+
+        .detail-card code {
+            background: var(--bg-hover);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--table-header);
+            color: var(--text-accent);
+            font-size: 13px;
+            letter-spacing: 0.05em;
+        }
+
+        tr:hover td {
+            background: rgba(96,165,250,0.08);
+        }
+
+        a.mitre-link {
+            color: var(--text-accent);
+            text-decoration: none;
+        }
+
+        a.mitre-link:hover {
+            text-decoration: underline;
+        }
+
+        .alert-warning {
+            background: #3b2f13;
+            border: 1px solid #92400e;
+            color: #fbbf24;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .alert-info {
+            background: rgba(96,165,250,0.1);
+            border: 1px solid var(--text-accent);
+            color: var(--text-accent);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+
+        .classification-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .mitre-original {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .icon-large {
+            font-size: 24px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .classification-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--dark-bg); border-bottom: 1px solid var(--border-color);">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/">
+                <span class="danger-dot"></span> <i class="fas fa-shield-alt" style="margin-left: 8px;"></i> TIARF
+            </a>
+            
+            <!-- Navbar Toggler for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{% url 'library' %}"><i class="fas fa-database me-1"></i> Library</a>
+                    
+                    <!-- Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-secret me-1"></i> Threat Management
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'tools' %}"><i class="fas fa-tools me-2"></i> Tools</a></li>
+                            <li><a class="dropdown-item" href="{% url 'groups' %}"><i class="fas fa-users me-2"></i> Groups</a></li>
+                        </ul>
+                    </li>
+                    
+                    <a href="{% url 'chatbot' %}" class="nav-link"><i class="fas fa-robot me-1"></i> AI Analyst</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="content">
+            <a href="{% url 'tools' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Tools List
+            </a>
+
+            {% if error %}
+                <div class="alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+                </div>
+            {% endif %}
+
+            {% if tool %}
+                <!-- Header with Classification -->
+                <h1>
+                    {% if tool.type == "tool" %}
+                        <i class="fas fa-wrench icon-large" style="color: var(--tool);"></i>
+                    {% else %}
+                        <i class="fas fa-bug icon-large" style="color: var(--malware);"></i>
+                    {% endif %}
+                    {{ tool.name }}
+                    
+                    <span class="type-badge {% if tool.type == 'tool' %}tool-badge{% elif tool.type == 'malware' %}malware-badge{% endif %}">
+                        {% if tool.type == "tool" %}
+                            <i class="fas fa-wrench"></i>
+                        {% else %}
+                            <i class="fas fa-bug"></i>
+                        {% endif %}
+                        {{ tool.type|title }}
+                    </span>
+                    
+                    <!-- Dual-use badge -->
+                    {% if tool.is_dual_use %}
+                        <span class="type-badge dual-use-badge">
+                            <i class="fas fa-exclamation-triangle"></i> Dual-Use
+                        </span>
+                    {% endif %}
+                    
+                    {% if tool.category and tool.category != 'Uncategorized' %}
+                        <span class="category-badge">{{ tool.category }}</span>
+                    {% endif %}
+                </h1>
+
+                <!-- Classification Information -->
+                <div class="classification-info">
+                    {% if tool.is_dual_use %}
+                        <div class="alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Classification Note:</strong> This is a legitimate security/testing tool that is frequently abused by threat actors.
+                            {% if tool.mitre_type %}
+                                <span class="mitre-original" style="margin-left: 8px;">
+                                    MITRE ATT&CK lists it as: 
+                                    <span class="type-badge malware-badge">
+                                        {{ tool.mitre_type|title }}
+                                    </span>
+                                </span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if tool.revoked %}
+                        <div class="alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Revoked / Deprecated:</strong> This entry has been revoked in the MITRE ATT&CK framework.
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Details Grid -->
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <h3><i class="fas fa-info-circle"></i> Details</h3>
+                        <p><strong>ID:</strong> <code>{{ tool.id }}</code></p>
+                        
+                        <p><strong>Classification:</strong> 
+                            <span class="type-badge {% if tool.type == 'tool' %}tool-badge{% else %}malware-badge{% endif %}">
+                                {% if tool.type == "tool" %}
+                                    <i class="fas fa-wrench"></i>
+                                {% else %}
+                                    <i class="fas fa-bug"></i>
+                                {% endif %}
+                                {{ tool.type|title }}
+                            </span>
+                        </p>
+                        
+                        {% if tool.matrices %}
+                            <p><strong>Matrices:</strong> {{ tool.matrices|join:", " }}</p>
+                        {% endif %}
+                        
+                        {% if tool.aliases %}
+                            <p><strong>Aliases:</strong> 
+                                {% for alias in tool.aliases %}
+                                    <span class="badge" style="background: var(--badge-bg); color: var(--text-muted); margin: 2px;">{{ alias }}</span>
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                        
+                        {% if tool.created %}
+                            <p><strong>Created:</strong> {{ tool.created|date:"Y-m-d H:i" }}</p>
+                        {% endif %}
+                        
+                        {% if tool.modified %}
+                            <p><strong>Modified:</strong> {{ tool.modified|date:"Y-m-d H:i" }}</p>
+                        {% endif %}
+                        
+                        {% if tool.x_mitre_platforms %}
+                            <p><strong>Platforms:</strong> {{ tool.x_mitre_platforms|join:", " }}</p>
+                        {% endif %}
+                        
+                        {% if tool.kill_chain_phases %}
+                            <p><strong>Kill Chain Phases:</strong> {{ tool.kill_chain_phases|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="detail-card">
+                        <h3><i class="fas fa-align-left"></i> Description</h3>
+                        {% if tool.description %}
+                            <p style="white-space: pre-wrap;">{{ tool.description }}</p>
+                        {% else %}
+                            <p style="color: var(--text-muted); font-style: italic;">No description available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- External References -->
+                {% if tool.external_references %}
+                    <div class="detail-card" style="margin-bottom: 32px;">
+                        <h3><i class="fas fa-external-link-alt"></i> External References</h3>
+                        <ul>
+                            {% for ref in tool.external_references %}
+                                <li>
+                                    <strong>{{ ref.source_name|default:"Source" }}:</strong>
+                                    {% if ref.url %}
+                                        <a href="{{ ref.url }}" target="_blank" class="mitre-link">
+                                            {{ ref.external_id|default:ref.url }}
+                                            <i class="fas fa-external-link-alt" style="font-size: 0.8em; margin-left: 4px;"></i>
+                                        </a>
+                                    {% else %}
+                                        {{ ref.external_id|default:"N/A" }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Groups Using This Tool -->
+                {% if tool.groups_using %}
+                    <div class="detail-card">
+                        <h3><i class="fas fa-users"></i> Threat Groups Using This {{ tool.type|title }} ({{ tool.groups_using|length }})</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>MITRE ID</th>
+                                    <th>Group Name</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for group in tool.groups_using %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'groups' %}?g={{ group.id }}" class="mitre-link">
+                                                {{ group.id }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <strong>{{ group.name }}</strong>
+                                            {% if group.aliases %}
+                                                <br>
+                                                <small style="color: var(--text-muted);">AKA: {{ group.aliases|join:", "|truncatewords:5 }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ group.description|truncatewords:30|default:"—" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
+                <!-- Techniques -->
+                {% if tool.techniques %}
+                    <div class="detail-card">
+                        <h3><i class="fas fa-target"></i> Associated Techniques ({{ tool.techniques|length }})</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Domain</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in tool.techniques %}
+                                    <tr>
+                                        <td>
+                                            <a href="https://attack.mitre.org/techniques/{{ t.id }}/" target="_blank" class="mitre-link">
+                                                {{ t.id }}
+                                                <i class="fas fa-external-link-alt" style="font-size: 0.8em; margin-left: 4px;"></i>
+                                            </a>
+                                        </td>
+                                        <td><strong>{{ t.name }}</strong></td>
+                                        <td>
+                                            <span class="badge" style="background: var(--badge-bg); color: var(--text-accent);">
+                                                {{ t.domain|default:"Enterprise" }}
+                                            </span>
+                                        </td>
+                                        <td>{{ t.description|truncatewords:30|default:"—" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
+                <!-- Footer Note for Dual-Use Tools -->
+                {% if tool.is_dual_use %}
+                    <div class="detail-card" style="background: rgba(255,193,7,0.05); border-color: var(--dual-use);">
+                        <h3 style="color: var(--dual-use);"><i class="fas fa-shield-alt"></i> About Dual-Use Tools</h3>
+                        <p>
+                            <strong>What are dual-use tools?</strong> These are legitimate security testing, administration, or 
+                            development tools that can be used for both defensive and offensive purposes. While they have valid 
+                            uses in penetration testing, system administration, and security research, threat actors often 
+                            abuse them in attacks.
+                        </p>
+                        <p>
+                            <strong>Examples include:</strong> Cobalt Strike (red teaming), Mimikatz (credential dumping), 
+                            PowerShell (automation), Metasploit (exploitation framework), and many system administration tools.
+                        </p>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <!-- Tool Not Found -->
+                <div class="detail-card" style="text-align: center;">
+                    <i class="fas fa-search" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+                    <h2>Tool Not Found</h2>
+                    <p>The requested tool or malware could not be loaded.</p>
+                    <a href="{% url 'tools' %}" class="back-link" style="margin-top: 16px; display: inline-flex;">
+                        <i class="fas fa-arrow-left"></i> Back to Tools List
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Add active class to current page nav item
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') && link.getAttribute('href').includes('tools')) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Make MITRE links open in new tab if not already
+            document.querySelectorAll('a[href*="attack.mitre.org"]').forEach(link => {
+                if (!link.hasAttribute('target')) {
+                    link.setAttribute('target', '_blank');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

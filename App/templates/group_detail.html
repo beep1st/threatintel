@@ -1,0 +1,489 @@
+<!-- group_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ group.name }} - TIARF</title>
+    <!-- Add this to force cache refresh -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff8c00;
+            --danger-color: #ff4444;
+            --warning-color: #ffaa00;
+            --success-color: #00ff88;
+            --info-color: #44aaff;
+            --dark-bg: #1e1e1e;
+            --darker-bg: #141414;
+            --card-bg: #2d2d2d;
+            --border-color: #444;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+
+            --bg-main: #0b0f14;
+            --bg-panel: #111827;
+            --bg-hover: #1e293b;
+
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-accent: #60a5fa;
+
+            --border-subtle: #1f2937;
+            --danger: #ef4444;
+
+            --badge-bg: #1f2937;
+            --table-header: #020617;
+
+            --glow: 0 0 12px rgba(96,165,250,0.25);
+        }
+      
+        body {
+            background-color: var(--darker-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+      
+        /* Fix dropdown dark theme */
+        .dropdown-menu {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--border-color);
+        }
+        
+        .dropdown-item {
+            color: var(--text-primary) !important;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(11, 59, 114, 0.1) !important;
+            color: var(--info-color) !important;
+        }
+      
+        /* Navbar */
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--info-color) !important;
+        }
+      
+        .navbar-brand .danger-dot {
+            color: var(--danger-color);
+            margin-right: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #020617, #0b0f14);
+            color: var(--text-main);
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-accent);
+            text-decoration: none;
+            margin-bottom: 24px;
+            font-size: 14px;
+            padding: 8px 16px;
+            border: 1px solid var(--text-accent);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            background: var(--text-accent);
+            color: var(--bg-main);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .matrix-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(96,165,250,0.2);
+            color: var(--text-accent);
+            border: 1px solid var(--text-accent);
+        }
+
+        .revoked {
+            color: var(--danger);
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .detail-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .detail-card h3 {
+            margin-top: 0;
+            color: var(--info-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-card p {
+            margin: 8px 0;
+        }
+
+        .detail-card code {
+            background: var(--bg-hover);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--table-header);
+            color: var(--text-accent);
+            font-size: 13px;
+            letter-spacing: 0.05em;
+        }
+
+        tr:hover td {
+            background: rgba(96,165,250,0.08);
+        }
+
+        a.mitre-link {
+            color: var(--text-accent);
+            
+        }
+
+        a.mitre-link:hover {
+            text-decoration: underline;
+        }
+
+        .alert-warning {
+            background: #3b2f13;
+            border: 1px solid #92400e;
+            color: #fbbf24;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        .container {
+            max-width: 1400px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--dark-bg); border-bottom: 1px solid var(--border-color);">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/">
+                <span class="danger-dot"></span> <i class="fas fa-shield-alt" style="margin-left: 8px;"></i> TIARF
+            </a>
+            
+            <!-- Navbar Toggler for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{% url 'library' %}"><i class="fas fa-database me-1"></i> Library</a>
+                    
+                    <!-- Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-secret me-1"></i> Threat Management
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'tools' %}"><i class="fas fa-tools me-2"></i>Tools</a></li>
+                            <li><a class="dropdown-item" href="{% url 'groups' %}"><i class="fas fa-users me-2"></i>Groups</a></li>
+                        </ul>
+                    </li>
+                    
+                    <a href="{% url 'chatbot' %}" class="nav-link"><i class="fas fa-robot me-1"></i> AI Analyst</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="content">
+            <a href="{% url 'groups' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+
+            {% if error %}
+                <div class="alert-warning">{{ error }}</div>
+            {% endif %}
+
+            {% if group %}
+                <h1>
+                    <i class="fas fa-user-secret" style="color: var(--text-accent);"></i>
+                    {{ group.name }}
+                    {% if group.matrices|length > 1 %}
+                        <span class="matrix-badge">{{ group.matrices|join:", " }}</span>
+                    {% endif %}
+                </h1>
+
+                {% if group.revoked %}
+                    <p class="revoked">⚠ Revoked / Deprecated</p>
+                {% endif %}
+
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <h3><i class="fas fa-info-circle"></i> Details</h3>
+                        <p><strong>ID:</strong> <code>G{{ group.id }}</code></p>
+                        <p><strong>Matrices:</strong> {{ group.matrices|join:", " }}</p>
+                        {% if group.contributors %}
+                            <p><strong>Contributors:</strong> {{ group.contributors|join:", " }}</p>
+                        {% endif %}
+                        {% if group.aliases %}
+                            <p><strong>Aliases:</strong> {{ group.aliases|join:", " }}</p>
+                        {% endif %}
+                        {% if group.created %}
+                            <p><strong>Created:</strong> {{ group.created }}</p>
+                        {% endif %}
+                        {% if group.modified %}
+                            <p><strong>Modified:</strong> {{ group.modified }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="detail-card">
+                        <h3><i class="fas fa-align-left"></i> Description</h3>
+                        <p>{{ group.description|default:"No description available." }}</p>
+                    </div>
+                </div>
+
+             {% if group.external_references %}
+    <div class="detail-card" style="margin-bottom: 32px;">
+        <h3><i class="fas fa-external-link-alt"></i> External References</h3>
+        <ul>
+            {% for ref in group.external_references %}
+                <li>
+                    <strong>{{ ref.source_name|default:"Source" }}:</strong>
+                    {% if ref.source_name == "mitre-attack" and ref.external_id %}
+                        <!-- Generate MITRE URL from external_id -->
+                        {% if ref.external_id|slice:":1" == "G" %}
+                            <!-- Group ID (e.g., G0018) -->
+                            <a href="https://attack.mitre.org/groups/{{ ref.external_id }}/" target="_blank" class="mitre-link">
+                                {{ ref.external_id }}
+                                <i class="fas fa-external-link-alt" style="font-size: 0.8em; margin-left: 4px;"></i>
+                            </a>
+                        {% elif ref.external_id|slice:":1" == "T" %}
+                            <!-- Technique ID (e.g., T1059) -->
+                            <a href="https://attack.mitre.org/techniques/{{ ref.external_id }}/" target="_blank" class="mitre-link">
+                                {{ ref.external_id }}
+                                <i class="fas fa-external-link-alt" style="font-size: 0.8em; margin-left: 4px;"></i>
+                            </a>
+                        {% elif ref.external_id|slice:":1" == "S" %}
+                            <!-- Software ID (e.g., S0154) -->
+                            <a href="https://attack.mitre.org/software/{{ ref.external_id }}/" target="_blank" class="mitre-link">
+                                {{ ref.external_id }}
+                                <i class="fas fa-external-link-alt" style="font-size: 0.8em; margin-left: 4px;"></i>
+                            </a>
+                        {% elif ref.external_id|slice:":1" == "M" %}
+                            <!-- Mitigation ID (e.g., M1036) -->
+                            <a href="https://attack.mitre.org/mitigations/{{ ref.external_id }}/" target="_blank" class="mitre-link">
+                                {{ ref.external_id }}
+                                <i class="fas fa-external-link-alt" style="font-size: 0.8em; margin-left: 4px;"></i>
+                            </a>
+                        {% else %}
+                            {{ ref.external_id }}
+                        {% endif %}
+                    {% elif ref.url %}
+                        <!-- If URL is provided directly -->
+                        <a href="{{ ref.url }}" target="_blank" class="mitre-link">
+                            {{ ref.external_id|default:ref.url }}
+                            <i class="fas fa-external-link-alt" style="font-size: 0.8em; margin-left: 4px;"></i>
+                        </a>
+                    {% else %}
+                        <!-- No URL available -->
+                        {{ ref.external_id|default:"N/A" }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+                {% if group.associated_groups %}
+                    <div class="detail-card">
+                        <h3><i class="fas fa-users"></i> Associated Groups ({{ group.associated_groups|length }})</h3>
+                        <ul>
+                            {% for ag in group.associated_groups %}
+                                <li><strong>{{ ag.name }}</strong>: {{ ag.description|truncatewords:50 }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if group.techniques %}
+                    <div class="detail-card">
+                        <h3><i class="fas fa-target"></i> Techniques Used ({{ group.techniques|length }})</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Domain</th>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Use</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in group.techniques %}
+                                    <tr>
+                                        <td>{{ t.domain|default:"Enterprise" }}</td>
+                                        <td><a href="https://attack.mitre.org/techniques/{{ t.id }}/" target="_blank" class="mitre-link">{{ t.id }}</a></td>
+                                        <td>{{ t.name }}</td>
+                                        <td>{{ t.use|truncatewords:35|default:"—" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
+                {% if group.software %}
+                    <div class="detail-card">
+                        <h3><i class="fas fa-cogs"></i> Software Used ({{ group.software|length }})</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Techniques</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for s in group.software %}
+                                    <tr>
+                                        <td><a href="{% url 'tools_detail' s.id %}" class="mitre-link">{{ s.id }}</a></td>
+                                        <td>{{ s.name }}</td>
+                                        <td>{{ s.type|title }}</td>
+                                        <td>{{ s.techniques|join:", " }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+      <p><strong>Tools/Malware:</strong>
+    {% if group.software %}
+        {% for s in group.software %}
+            <span class="software-item">
+                <a href="{% url 'tools_detail' s.id %}" class="mitre-link">
+                    {{ s.name }}
+                </a>
+                
+            </span>
+            {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+        None
+    {% endif %}
+</p>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="alert-warning">
+                    <h2>Group not found</h2>
+                    <p>The requested group could not be loaded.</p>
+                    <a href="{% url 'groups' %}" class="back-link" style="margin-top: 16px; display: inline-block;">Back to List</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

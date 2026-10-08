@@ -1,0 +1,82 @@
+{% load static %}
+ <!-- Footer -->
+  <footer>
+    <div class="container-fluid py-1 bg-dark mt-1 mt-md-4  " >
+          <div class="container">
+            <div class="row ">
+              <div class="col-md-3 col-6 ">
+                <h2 class="text-white">Categories</h2>
+                <ul class="list-unstyled text-white py-2 ">
+                  <li> <a class="py-2 text-decoration-none text-white " href="{% url 'hardwarepage' %}">Hardware Projects</a></li> 
+                
+                  <li class="mt-2"><a class="py-2 text-decoration-none text-white " href="{%  url 'softwarepage' %}">Software Projects</a></li>  
+                  <li class="mt-2"> <a class="py-2 text-decoration-none text-white " href="{% url 'AIpage' %}">AI Projects</a></li> 
+                  <li class="mt-2"> <a class="py-2 text-decoration-none text-white " href="{% url 'Electronicspage' %}">Electronics Projects</a></li> 
+                  <li class="mt-2"> <a class="py-2 text-decoration-none text-white " href="{% url 'Robotspage' %}">DIY Robotics</a>
+                  </li> 
+                   
+                  </ul>
+  
+               
+              </div>
+  
+             
+  
+  
+              <div class="col-md-3 col-6 text-white">
+                <h2 class="text-white">Main Menu</h2>
+                <ul class="list-unstyled text-white py-2">
+                  <li  ><a class="py-2 text-decoration-none text-white" href="{% url 'home' %}">home</a></li>  
+                  <li class="mt-2" > <a class="py-2 text-decoration-none text-white " href="{% url 'product' %}">Products</a></li> 
+                   <li class="mt-2" > <a class="py-2 text-decoration-none text-white " href="{% url 'project' %}">Projects</a></li> 
+                 <li  class="mt-2"> <a class="py-2 text-decoration-none text-white" href="">Categories</a></li>  
+                  <li class="mt-2" > <a class="py-2 text-decoration-none text-white" href="{% url 'home' %}#faq">FAQS</a></li> 
+                  </ul>
+               
+              </div>
+  
+              <div class="col-md-3 col-6">
+                <h2 class="text-white">Links</h2>
+                <ul class="list-unstyled text-white py-2">
+                  <li class="py-2"><i class="fa-solid fa-phone mx-2 fs-4"></i>0310-4505008</li>
+                  {% comment %} <li class="py-2"><i class="fa-brands fa-facebook mx-2"></i>Facebook</li> {% endcomment %}
+                  <li class="py-2"><i class="fa-brands fa-whatsapp mx-2 fs-4"></i>0310-4505008</li>
+                  <li class="py-2">
+                    <a href="https://www.youtube.com/@Isol_pk" class='text-decoration-none text-white'><i class="fa-brands fa-youtube mx-2 fs-4"></i>Youtube</li></a>
+  
+                </ul>
+              </div>
+
+              <div class="col-md-3 col-6">
+                <h2 class="text-white">About Us</h2>
+                <p class="fs-6" style=" color:white">ProjectStore is your go-to eCommerce store for hardware projects, software projects, electronics kits, AI, and robotics projects. We provide high-quality, ready-made and DIY tech solutions for students, developers, and enthusiasts. Explore our collection and bring your ideas to life!</p>
+              </div>
+          
+            
+            </div>
+          </div>
+          </div>
+        </div>
+  </footer>
+  
+  <section id="bottomfooter " class="p-0 m-0">
+    <div class="container-fluid  py-0  " style="overflow-y: hidden; " id="bt">
+      <div class="row">
+        <div class="d-flex justify-content-center align-items-center">
+          <img
+            id="img1"
+             src="{% static 'Images/renamebg.png' %}"
+              alt="Logo"
+            style="width: 200px; height: 80px; object-fit: cover;margin-top: 0px; "
+          /> 
+                
+     
+        <p class="fs-2 mt-2" >|</p>
+          <a href="https://www.isol.pk/" class="text-decoration-none text-dark">
+            
+        <h6 class='fw-bold mt-1 '  style="margin-left:0px" id="h56"><a href="https://www.isol.pk/" class="text-decoration-none text-dark px-2">Powered by <img src="{% static 'Images/wlogo.png' %}"  id='isol' alt="" ></a> </h6>
+        
+    </div>
+    </div>
+    </div>
+  </section>

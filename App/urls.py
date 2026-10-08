@@ -1,0 +1,47 @@
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.dashboard, name='dashboard'),
+    path('library/', views.library, name='library'),
+    path('profiles/', views.profiles, name='profiles'),
+    path('refresh-profiles/', views.refresh_profiles, name='refresh_profiles'),
+    path('entity/<str:entity_type>/<str:entity_name>/', views.entity_detail, name='entity_detail'),
+    path('refresh_library', views.refresh_library, name='refresh_library'),
+    path('article/<int:pk>/', views.read_article, name='read_article'),
+    path('ai-analyze/', views.ai_analyze_article, name='ai_analyze_article'),
+    path('read-article-summary/', views.read_article_summary, name='read_article_summary'),
+    path('start-auto-ingestion/', views.start_auto_ingestion, name='start_auto_ingestion'),
+    path('check-ingestion-status/', views.check_ingestion_status, name='check_ingestion_status'),
+    path('run-ingestion/', views.run_ingestion_command, name='run_ingestion'),
+    path('chatbot/', views.chatbot, name='chatbot'),    
+    path('clear-chat/',views.clear_chat, name='clear_chat'),
+    # path('threats/',views.get_threat_actors, name='threats'),
+    path('check-ip/', views.check_single_ip, name='check_ip'),
+    path("apt-stats/",views.apt_stats, name="apt_stats"),
+    path('threat_dashboard', views.threat_dashboard, name='dashboard'),
+    path('threats/<str:actor_name>/',views.threat_detail, name='threat_detail'),
+    path('threats/', views.threat_dashboard, name='threat_dashboard'),
+    path('threats/<str:actor_name>/', views.threat_detail, name='threat_detail'),
+    # NEW URLs for enhanced filtering system
+    path('update-trending-now/', views.update_trending_now, name='update_trending_now'),
+    path('save-filter-preset/', views.save_filter_preset, name='save_filter_preset'),
+     path('mitre_dashboard/', views.mitre_dashboard, name='mitre_dashboard'),
+    path('technique/<str:technique_id>/', views.technique_detail, name='technique_detail'),
+    path('api/techniques/', views.api_techniques, name='api_techniques'),
+    path('update/', views.update_mitre_data, name='update_mitre_data'),
+    path('search/', views.search_techniques, name='search_techniques'),
+    path('clear-cache/',views.clear_cache_view, name='clear_cache'),
+    # URLs for specific filter views (optional - if you want dedicated pages)
+    path('filter/<str:filter_group>/',views.filter_view, name='filter_view'),
+    path("groups/",views.groups, name="groups"),
+    path('groups/<str:group_id>/', views.groups_detail, name='groups_detail'),
+    path('tools/', views.tools, name='tools'),
+    path('tools/<str:tool_id>/',views.tools_detail, name='tools_detail'),
+    path('actor-matching/',views.actor_matching, name='actor_matching'),
+    path('combined-group-detail/',views.combined_group_detail, name='combined_group_detail'),
+    path('time/<str:time_period>/',views.time_filter_view, name='time_filter_view'),
+    path('misp-actor-detail/',views.misp_actor_detail, name='misp_actor_detail'),
+    path('combined/<str:time_period>/<str:filter_group>/',views.combined_filter_view, name='combined_filter_view'),
+]

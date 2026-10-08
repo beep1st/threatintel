@@ -1,0 +1,435 @@
+<!-- technique_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ technique.external_id }} - {{ technique.name }} | ATT&CK</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #283593;
+            --accent-color: #5c6bc0;
+            --light-bg: #f5f5f5;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .technique-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .technique-id-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .detail-card h5 {
+            color: var(--primary-color);
+            border-bottom: 2px solid #e8eaf6;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tactic-badge {
+            background: #e8eaf6;
+            color: var(--primary-color);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .platform-badge {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        
+        .data-source-badge {
+            background: #e0f2f1;
+            color: #00695c;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+        
+        .related-technique {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .related-technique:hover {
+            background: #e8eaf6;
+            transform: translateX(5px);
+        }
+        
+        .subtechnique-indicator {
+            display: inline-block;
+            background: #ffecb3;
+            color: #ff8f00;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .btn-back {
+            background: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-back:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .detection-content {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #4caf50;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+        
+        .metadata-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metadata-label {
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .metadata-value {
+            color: #333;
+        }
+        
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        
+        .breadcrumb-item a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        
+        .breadcrumb-item.active {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'mitre_dashboard' %}">
+                <i class="bi bi-shield-shaded me-2"></i>
+                <span>MITRE ATT&CK</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'mitre_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'technique_list' %}">Techniques</a></li>
+                <li class="breadcrumb-item active">{{ technique.external_id }}</li>
+            </ol>
+        </nav>
+
+        <!-- Technique Header -->
+        <div class="technique-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="technique-id-badge">
+                        {{ technique.external_id }}
+                        {% if technique.is_subtechnique %}
+                            <span class="subtechnique-indicator">Sub-technique</span>
+                        {% endif %}
+                    </span>
+                    <h1 class="display-6 fw-bold mb-4">{{ technique.name }}</h1>
+                    
+                    {% if technique.is_subtechnique and technique.subtechnique_of %}
+                    <div class="alert alert-info d-inline-flex align-items-center">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Sub-technique of: 
+                        <a href="{% url 'technique_detail' technique.subtechnique_of.external_id %}" 
+                           class="fw-bold ms-2">
+                            {{ technique.subtechnique_of.external_id }} - {{ technique.subtechnique_of.name }}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-back" onclick="window.history.back()">
+                        <i class="bi bi-arrow-left me-2"></i>Back to List
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Description -->
+                <div class="detail-card">
+                    <h5><i class="bi bi-file-text me-2"></i>Description</h5>
+                    <div class="technique-description">
+                        {{ technique.description|linebreaks }}
+                    </div>
+                </div>
+
+                <!-- Detection -->
+                {% if technique.detection %}
+                <div class="detail-card">
+                    <h5><i class="bi bi-binoculars me-2"></i>Detection</h5>
+                    <div class="detection-content">
+                        {{ technique.detection|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Related Techniques -->
+                {% if related_techniques %}
+                <div class="detail-card">
+                    <h5><i class="bi bi-link-45deg me-2"></i>Related Techniques</h5>
+                    <div class="related-techniques">
+                        {% for related in related_techniques %}
+                        <div class="related-technique">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a href="{% url 'technique_detail' related.external_id %}" 
+                                       class="text-decoration-none fw-bold">
+                                        {{ related.external_id }} - {{ related.name }}
+                                    </a>
+                                    <div class="small text-muted mt-1">
+                                        {% for tactic in related.tactics.all|slice:":3" %}
+                                        <span class="tactic-badge">{{ tactic.name }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <i class="bi bi-arrow-right text-primary"></i>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <!-- Metadata -->
+                <div class="detail-card">
+                    <h5><i class="bi bi-info-circle me-2"></i>Metadata</h5>
+                    <div class="metadata-list">
+                        <div class="metadata-item">
+                            <span class="metadata-label">ID:</span>
+                            <span class="metadata-value">{{ technique.external_id }}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">Type:</span>
+                            <span class="metadata-value">
+                                {% if technique.is_subtechnique %}
+                                    Sub-technique
+                                {% else %}
+                                    Technique
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">Created:</span>
+                            <span class="metadata-value">{{ technique.created|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="metadata-label">Modified:</span>
+                            <span class="metadata-value">{{ technique.modified|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tactics -->
+                <div class="detail-card">
+                    <h5><i class="bi bi-diagram-3 me-2"></i>Tactics</h5>
+                    <div class="tactics-list">
+                        {% for tactic in technique.tactics.all %}
+                        <span class="tactic-badge">{{ tactic.name }}</span>
+                        {% empty %}
+                        <p class="text-muted small">No tactics assigned</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Platforms -->
+                <div class="detail-card">
+                    <h5><i class="bi bi-laptop me-2"></i>Platforms</h5>
+                    <div class="platforms-list">
+                        {% for platform in technique.platforms %}
+                        <span class="platform-badge">{{ platform }}</span>
+                        {% empty %}
+                        <p class="text-muted small">No platforms specified</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Data Sources -->
+                {% if technique.data_sources %}
+                <div class="detail-card">
+                    <h5><i class="bi bi-database me-2"></i>Data Sources</h5>
+                    <div class="data-sources-list">
+                        {% for source in technique.data_sources %}
+                        <span class="data-source-badge">{{ source }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Sub-techniques -->
+                {% if subtechniques %}
+                <div class="detail-card">
+                    <h5><i class="bi bi-layers me-2"></i>Sub-techniques</h5>
+                    <div class="subtechniques-list">
+                        {% for sub in subtechniques %}
+                        <div class="related-technique">
+                            <a href="{% url 'technique_detail' sub.external_id %}" 
+                               class="text-decoration-none">
+                                <strong>{{ sub.external_id }}</strong> - {{ sub.name|truncatewords:10 }}
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="row mt-4 mb-5">
+            <div class="col-12">
+                <div class="detail-card">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <button class="btn btn-outline-primary w-100" onclick="window.print()">
+                                <i class="bi bi-printer me-2"></i>Print
+                            </button>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <a href="{% url 'api_techniques' %}" class="btn btn-outline-secondary w-100" target="_blank">
+                                <i class="bi bi-code-slash me-2"></i>API JSON
+                            </a>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <a href="https://attack.mitre.org/techniques/{{ technique.external_id|slice:1:'/' }}" 
+                               class="btn btn-outline-info w-100" target="_blank">
+                                <i class="bi bi-box-arrow-up-right me-2"></i>MITRE Official
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add click events to related techniques
+        document.querySelectorAll('.related-technique').forEach(item => {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', function() {
+                const link = this.querySelector('a');
+                if (link) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+
+        // Add copy ID functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const idBadge = document.querySelector('.technique-id-badge');
+            idBadge.style.cursor = 'pointer';
+            idBadge.title = 'Click to copy ID';
+            
+            idBadge.addEventListener('click', function() {
+                const id = '{{ technique.external_id }}';
+                navigator.clipboard.writeText(id).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="bi bi-check-lg me-1"></i>Copied!';
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+        });
+
+        // Highlight search terms if any
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchTerm = urlParams.get('search');
+        if (searchTerm) {
+            document.querySelectorAll('.technique-description').forEach(element => {
+                const html = element.innerHTML;
+                const regex = new RegExp(`(${searchTerm})`, 'gi');
+                element.innerHTML = html.replace(regex, '<mark>$1</mark>');
+            });
+        }
+    </script>
+</body>
+</html>

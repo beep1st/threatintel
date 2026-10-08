@@ -1,0 +1,812 @@
+<!-- templates/mitre_attack/mitre_dashboard.html -->
+<!DOCTYPE html>
+{% load static %}
+{% load extra_filters %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --mitre-red: #c41230;
+            --mitre-dark: #1a1a1a;
+            --mitre-light: #f5f5f5;
+            --mitre-blue: #0066cc;
+            --mitre-green: #2e7d32;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-mitre {
+            background: linear-gradient(135deg, var(--mitre-dark) 0%, #333 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .dashboard-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--mitre-red);
+        }
+        
+        .domain-selector {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .domain-badge {
+            background: var(--mitre-light);
+            color: var(--mitre-dark);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            border: 2px solid var(--mitre-red);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            height: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: var(--mitre-red);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--mitre-red);
+        }
+        
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--mitre-dark);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .tactic-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .tactic-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .tactic-id {
+            display: inline-block;
+            background: var(--mitre-dark);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .tactic-name {
+            font-weight: 600;
+            color: var(--mitre-dark);
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        
+        .technique-count {
+            background: #ffeaea;
+            color: var(--mitre-red);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .update-info {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid var(--mitre-green);
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .btn-mitre {
+            background: linear-gradient(45deg, var(--mitre-red), #e53935);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-mitre:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(196, 18, 48, 0.3);
+            color: white;
+        }
+        
+        .btn-mitre-outline {
+            background: transparent;
+            border: 2px solid var(--mitre-red);
+            color: var(--mitre-red);
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-mitre-outline:hover {
+            background: var(--mitre-red);
+            color: white;
+        }
+        
+        .recent-technique {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            border-left: 3px solid var(--mitre-blue);
+        }
+        
+        .recent-technique:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .tech-id {
+            color: var(--mitre-red);
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .tech-name {
+            color: var(--mitre-dark);
+            font-weight: 500;
+        }
+        
+        .platform-tag {
+            background: #e3f2fd;
+            color: var(--mitre-blue);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 2px;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: var(--mitre-red);
+        }
+        
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--mitre-red);
+        }
+        
+        .last-update {
+            font-size: 0.9rem;
+            color: #666;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .alert-mitre {
+            background: #ffeaea;
+            border-left: 4px solid var(--mitre-red);
+            color: var(--mitre-dark);
+        }
+        
+        .tab-content {
+            background: white;
+            border-radius: 0 0 10px 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: var(--mitre-red);
+            color: white;
+            border-color: var(--mitre-red);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--mitre-dark);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 20px;
+            }
+            .stat-card {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-mitre">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="10" fill="#c41230"/>
+                    <path d="M30 30L50 70L70 30" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="50" cy="35" r="5" fill="white"/>
+                </svg>
+                <div class="d-flex flex-column ms-2">
+                    <span class="fw-bold fs-4">MITRE ATT&CK</span>
+                    <span class="small opacity-75">Threat Intelligence Dashboard</span>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'search_techniques' %}"><i class="bi bi-search me-1"></i>Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'api_techniques' %}" target="_blank"><i class="bi bi-code-slash me-1"></i>API</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="domainDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-globe me-1"></i>{{ domain|title }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for d in domains %}
+                            <li>
+                                <a class="dropdown-item {% if domain == d.id %}active{% endif %}" 
+                                   href="?domain={{ d.id }}">
+                                    {{ d.name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Domain Selector -->
+        <div class="domain-selector">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="domain-badge">
+                        <i class="bi bi-shield-check me-2"></i>
+                        {{ domain|title }} ATT&CK Matrix
+                    </span>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-mitre" onclick="updateData()">
+                        <i class="bi bi-cloud-download me-2"></i>Fetch Latest Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1 class="display-6 fw-bold text-dark mb-3">MITRE ATT&CK Intelligence Dashboard</h1>
+            <p class="lead mb-0">Live data fetched from MITRE CTI GitHub repository. Viewing <strong>{{ domain|title }}</strong> matrix with {{ total_techniques }} techniques across {{ total_tactics }} tactics.</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div class="stat-number">{{ total_techniques }}</div>
+                    <div class="stat-label">Total Techniques</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-diagram-3"></i>
+                    </div>
+                    <div class="stat-number">{{ total_tactics }}</div>
+                    <div class="stat-label">Tactics</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-layers"></i>
+                    </div>
+                    <div class="stat-number">{{ stats.subtechniques }}</div>
+                    <div class="stat-label">Sub-techniques</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="stat-number" id="lastUpdateTime">
+                        {% if last_update %}
+                            {{ last_update|timesince }} ago
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </div>
+                    <div class="stat-label">Last Updated</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Left Column: Tactics & Charts -->
+            <div class="col-lg-8">
+                <!-- Search Box -->
+                <div class="search-box">
+                    <h5 class="mb-3 fw-bold"><i class="bi bi-search me-2"></i>Search Techniques</h5>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" 
+                               placeholder="Search by ID, name, description...">
+                        <button class="btn btn-mitre" onclick="searchTechniques()">
+                            <i class="bi bi-search me-2"></i>Search
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <ul class="nav nav-tabs" id="dashboardTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#tactics">Tactics Matrix</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#platforms">Platforms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#recent">Recent</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- Tactics Tab -->
+                    <div class="tab-pane fade show active" id="tactics">
+                        <div class="row">
+                            {% if stats.tactics_with_counts %}
+                                {% for item in stats.tactics_with_counts %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="tactic-card" 
+                                         style="border-left-color: hsl({{ forloop.counter|add:"0" }}, 70%, 50%);">
+                                        <div class="tactic-id">{{ item.id }}</div>
+                                        <h6 class="tactic-name">{{ item.name }}</h6>
+                                        <p class="small text-muted mb-2">{{ item.tactic.description|truncatewords:15 }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="technique-count">
+                                                <i class="bi bi-stack me-1"></i>{{ item.count }} techniques
+                                            </span>
+                                            <a href="{% url 'search_techniques' %}?domain={{ domain }}&q={{ item.name|urlencode }}" 
+                                               class="btn btn-sm btn-mitre-outline">View All</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <div class="col-12">
+                                <div class="alert alert-mitre">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    No tactics found. Click "Fetch Latest Data" to load MITRE ATT&CK data.
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Platforms Tab -->
+                    <div class="tab-pane fade" id="platforms">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h6 class="fw-bold mb-3">Platform Distribution</h6>
+                                    <canvas id="platformChart" height="250"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Top Platforms</h6>
+                                {% for platform, count in stats.platforms|slice:":10" %}
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="fw-bold">{{ platform }}</span>
+                                        <span class="text-muted">{{ count }} techniques</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-danger" role="progressbar" 
+                                             style="width: {{ count|divisibleby:stats.total_techniques|default:0}}%"></div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <p class="text-muted">No platform data available</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Tab -->
+                    <div class="tab-pane fade" id="recent">
+                        <h6 class="fw-bold mb-3">Recently Added/Updated Techniques</h6>
+                        {% if recent_techniques %}
+                            {% for tech in recent_techniques %}
+                            <div class="recent-technique">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="tech-id">{{ tech.external_id }}</div>
+                                        <div class="tech-name">{{ tech.name }}</div>
+                                        <div class="small text-muted mt-1">
+                                            {% for tactic in tech.tactics.all|slice:":3" %}
+                                            <span class="badge bg-light text-dark me-1">{{ tactic.name }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'technique_detail' tech.external_id %}?domain={{ domain }}" 
+                                       class="btn btn-sm btn-mitre-outline">View</a>
+                                </div>
+                                {% if tech.platforms %}
+                                <div class="mt-2">
+                                    {% for platform in tech.platforms|slice:":3" %}
+                                    <span class="platform-tag">{{ platform }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <p class="text-muted">No recent techniques</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Updates & Quick Actions -->
+            <div class="col-lg-4">
+                <!-- Update Info -->
+                <div class="update-info mb-4">
+                    <h6><i class="bi bi-info-circle me-2"></i>Data Status</h6>
+                    <p class="small mb-2">
+                        <strong>Source:</strong> MITRE CTI GitHub
+                        <br><strong>Domain:</strong> {{ domain|title }}
+                        <br><strong>Cache Status:</strong> <span id="cacheStatus">Active</span>
+                    </p>
+                    <div class="last-update">
+                        <i class="bi bi-clock-history me-1"></i>
+                        Last fetch: 
+                        <strong id="lastFetch">
+                            {% if last_update %}
+                                {{ last_update|date:"M d, Y H:i" }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="chart-container mb-4">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2"></i>Technique Types</h6>
+                    <canvas id="typeChart" height="200"></canvas>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="chart-container">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-lightning me-2"></i>Quick Actions</h6>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'search_techniques' %}?domain={{ domain }}" class="btn btn-mitre-outline">
+                            <i class="bi bi-list-ul me-2"></i>Browse All Techniques
+                        </a>
+                        <button class="btn btn-mitre-outline" onclick="exportData()">
+                            <i class="bi bi-download me-2"></i>Export JSON Data
+                        </button>
+                        <button class="btn btn-mitre-outline" onclick="showAPIInfo()">
+                            <i class="bi bi-code-slash me-2"></i>API Documentation
+                        </button>
+                        <button class="btn btn-mitre-outline" onclick="clearCache()">
+                            <i class="bi bi-trash me-2"></i>Clear Cache
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Data Loading Indicator -->
+                <div id="loadingIndicator" class="loading-spinner" style="display: none;">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Fetching latest data from MITRE...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="mb-2">
+                <i class="bi bi-github me-1"></i>
+                Data sourced from 
+                <a href="https://github.com/mitre/cti" target="_blank" class="text-decoration-none">
+                    <strong>MITRE/CTI Repository</strong>
+                </a>
+            </p>
+            <p class="small text-muted">
+                ATT&CK® is a registered trademark of The MITRE Corporation. 
+                This tool is not officially affiliated with MITRE.
+                <br>
+                <span id="currentTime" class="fw-bold"></span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleString('en-US', { 
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+        }
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Platform Chart
+        const platformCtx = document.getElementById('platformChart').getContext('2d');
+        const platformData = {
+            labels: [
+                {% for platform, count in stats.platforms|slice:":5" %}
+                '{{ platform }}'{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            datasets: [{
+                data: [
+                    {% for platform, count in stats.platforms|slice:":5" %}
+                    {{ count }}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                backgroundColor: [
+                    '#c41230', '#e53935', '#f44336', '#ef5350', '#e57373'
+                ]
+            }]
+        };
+        
+        const platformChart = new Chart(platformCtx, {
+            type: 'doughnut',
+            data: platformData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Type Chart
+        const typeCtx = document.getElementById('typeChart').getContext('2d');
+        const typeChart = new Chart(typeCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Techniques', 'Sub-techniques'],
+                datasets: [{
+                    data: [
+                        {{ total_techniques|add:"-stats.subtechniques" }},
+                        {{ stats.subtechniques }}
+                    ],
+                    backgroundColor: ['#c41230', '#ff6b6b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Search function
+        function searchTechniques() {
+            const query = document.getElementById('searchInput').value;
+            if (query) {
+                window.location.href = `{% url 'search_techniques' %}?domain={{ domain }}&q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        // Update data
+        function updateData() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const cacheStatus = document.getElementById('cacheStatus');
+            
+            loadingIndicator.style.display = 'block';
+            cacheStatus.textContent = 'Updating...';
+            cacheStatus.style.color = '#c41230';
+            
+            fetch('{% url "update_mitre_data" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `domain={{ domain }}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showAlert('Data update started! Page will refresh in 5 seconds...', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 5000);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('Error updating data: ' + error.message, 'danger');
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                    cacheStatus.textContent = 'Active';
+                    cacheStatus.style.color = '';
+                }, 2000);
+            });
+        }
+
+        function exportData() {
+            window.open('{% url "api_techniques" %}?domain={{ domain }}', '_blank');
+        }
+
+        function showAPIInfo() {
+            alert('API Endpoints:\n' +
+                  '1. /api/techniques/?domain={{ domain }}\n' +
+                  '2. /api/techniques/?domain={{ domain }}&search=phishing\n' +
+                  '3. /api/techniques/?domain={{ domain }}&format=json\n\n' +
+                  'All endpoints return JSON data.');
+        }
+
+        function clearCache() {
+            if (confirm('Clear cache and reload data?')) {
+                fetch('/clear-cache/?domain={{ domain }}')
+                    .then(() => {
+                        showAlert('Cache cleared. Refreshing...', 'info');
+                        setTimeout(() => location.reload(), 1000);
+                    });
+            }
+        }
+
+        // Utility functions
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                <strong>${type === 'success' ? '✓' : '⚠'}</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+
+        // Auto-refresh every 5 minutes
+        setInterval(() => {
+            const lastUpdate = new Date('{{ last_update|date:"c" }}');
+            const now = new Date();
+            const diffMinutes = (now - lastUpdate) / (1000 * 60);
+            
+            if (diffMinutes > 5) {
+                document.getElementById('cacheStatus').textContent = 'Stale';
+                document.getElementById('cacheStatus').style.color = '#ff9800';
+            }
+        }, 60000);
+
+        // Enter key for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchTechniques();
+            }
+        });
+
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

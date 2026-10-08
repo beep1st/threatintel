@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Threat Actor Matching Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #0b0f14;
+            --bg-panel: #111827;
+            --bg-panel-2: #0f172a;
+            --bg-hover: #1e293b;
+
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-accent: #60a5fa;
+
+            --border-subtle: #1f2937;
+            --danger: #ef4444;
+            --warning-bg: #3b2f13;
+            --warning-border: #92400e;
+
+            --badge-bg: #1f2937;
+            --table-header: #020617;
+
+            --glow: 0 0 12px rgba(96,165,250,0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Navbar */
+        .navbar {
+            height: 58px;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(180deg, #020617, #020617);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .navbar-brand {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand:hover {
+            color: var(--text-accent);
+        }
+
+        .danger-dot {
+            color: var(--danger);
+            font-size: 14px;
+            text-shadow: 0 0 6px rgba(239,68,68,0.7);
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 18px;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+            background: var(--bg-hover);
+            box-shadow: var(--glow);
+        }
+
+        .nav-link i {
+            font-size: 13px;
+            color: var(--text-accent);
+        }
+
+        html, body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: linear-gradient(180deg, #020617, #0b0f14);
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 58px);
+        }
+
+        .content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, #0f172a, #020617 60%);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 24px;
+            color: var(--text-main);
+        }
+
+        h2 {
+            font-size: 24px;
+            margin: 32px 0 16px;
+            color: var(--text-accent);
+        }
+
+        .stats {
+            background: var(--bg-panel);
+            padding: 16px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 32px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .stats p {
+            margin: 4px 0;
+            color: var(--text-main);
+        }
+
+        .stats small {
+            color: var(--text-muted);
+            display: block;
+            margin-top: 12px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--text-accent);
+            color: #000;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #93bbfc;
+            box-shadow: var(--glow);
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .alert-warning {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: #fbbf24;
+        }
+
+        .alert-info {
+            background: #172554;
+            border: 1px solid #1e40af;
+            color: #93bbfc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            background: var(--bg-panel);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        th {
+            background: var(--table-header);
+            color: var(--text-accent);
+            font-size: 13px;
+            letter-spacing: 0.03em;
+        }
+
+        tr:hover td {
+            background: rgba(96,165,250,0.05);
+        }
+
+        a.mitre-link {
+            color: var(--text-accent);
+            text-decoration: none;
+        }
+
+        a.mitre-link:hover {
+            text-decoration: underline;
+        }
+
+        ul.list-unstyled {
+            list-style: none;
+            padding-left: 0;
+            columns: 2;
+            column-gap: 40px;
+        }
+
+        ul.list-unstyled li {
+            margin-bottom: 10px;
+            padding: 6px 0;
+        }
+
+        /* Accordion Styles */
+        .accordion {
+            margin: 20px 0;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--bg-panel);
+        }
+
+        .accordion-header {
+            padding: 16px 20px;
+            background: rgba(30, 41, 59, 0.5);
+            border-bottom: 1px solid var(--border-subtle);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .accordion-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text-accent);
+        }
+
+        .accordion-header .accordion-icon {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            color: var(--text-accent);
+        }
+
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .accordion-content.show {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            ul.list-unstyled {
+                columns: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <span class="danger-dot">●</span> ThreatCluster
+        </a>
+
+        <div class="navbar-nav">
+            <a class="nav-link" href="{% url 'tools' %}">
+                <i class="fas fa-database"></i> Tools
+            </a>
+            <a class="nav-link" href="{% url 'groups' %}">
+                <i class="fas fa-user-secret"></i> Groups
+            </a>
+            <a class="nav-link" href="{% url 'actor_matching' %}">
+                <i class="fas fa-robot"></i> Matching
+            </a>
+            <a class="nav-link" href="{% url 'threat_dashboard' %}">
+                <i class="fas fa-cog"></i> Actors
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <div class="content">
+
+        <h1 class='text-center'>Threat Actor Matching: MISP ↔ MITRE ATT&CK Groups</h1>
+
+        {% if error %}
+            <div class="alert alert-warning">{{ error }}</div>
+        {% endif %}
+
+        <div class="stats">
+            <p><strong>Total MISP Actors:</strong> {{ stats.total_misp|default:0 }}</p>
+            <p><strong>Total MITRE Groups:</strong> {{ stats.total_mitre|default:0 }}
+                {% if loaded_matrices %} (Matrices: {{ loaded_matrices|join:", " }}){% endif %}</p>
+            <p><strong>MISP Matched:</strong> {{ stats.matched_misp_count|default:0 }}
+                ({{ stats.unique_matched_mitre_count|default:0 }} unique MITRE)</p>
+            <p><strong>Unmatched in MISP:</strong> {{ stats.unmatched_misp_count|default:0 }}</p>
+            <p><strong>Unmatched in MITRE:</strong> {{ stats.unmatched_mitre_count|default:0 }}</p>
+            <div>
+                <small>Last updated: {{ last_update|date:"Y-m-d H:i:s"|default:"N/A" }}</small>
+                <a href="?refresh=true" class="btn btn-sm">Refresh Data</a>
+            </div>
+        </div>
+
+        <h2>Paired Matches ({{ stats.matched_misp_count|default:0 }})</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>MISP Actor</th>
+                    <th>MITRE Group</th>
+                    <th>MITRE ID</th>
+                    <th>Synonyms (MISP)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in paired_matches %}
+                <tr>
+                    <td>{{ item.misp_name }}</td>
+                    <td>{{ item.mitre_name }}</td>
+                  <td><a href="{% url 'combined_group_detail' %}?mitre_id={{ item.mitre_id }}&misp_name={{ item.misp_name|urlencode }}" class="mitre-link">{{ item.mitre_id }}</a></td>
+                    <td>{{ item.misp_synonyms|join:", " |default:"N/A" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No paired matches found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- In the unmatched MISP actors section -->
+{% if unmatched_misp %}
+<div class="accordion" id="unmatchedMispAccordion">
+    <div class="accordion-header" onclick="toggleAccordion('unmatchedMispContent', this)">
+        <h2>Unmatched MISP Actors ({{ unmatched_misp|length }})</h2>
+        <span class="accordion-icon">▼</span>
+    </div>
+    <div class="accordion-content" id="unmatchedMispContent">
+        <ul class="list-unstyled">
+            {% for actor in unmatched_misp %}
+            <li>
+             <a href="{% url 'misp_actor_detail' %}?actor_name={{ actor.name|urlencode }}" 
+                   class="mitre-link"
+                   style="display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-user-secret"></i>
+                    {{ actor.name }}
+                    {% if actor.uuid %}
+                    <small style="color: var(--text-muted); font-size: 11px;">
+                        ({{ actor.uuid|slice:":8" }}...)
+                    </small>
+                    {% endif %}
+                </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+        {% if only_in_mitre %}
+        <div class="accordion" id="unmatchedMitreAccordion">
+            <div class="accordion-header" onclick="toggleAccordion('unmatchedMitreContent', this)">
+                <h2>Unmatched MITRE Groups ({{ only_in_mitre|length }})</h2>
+                <span class="accordion-icon">▼</span>
+            </div>
+            <div class="accordion-content" id="unmatchedMitreContent">
+                <ul class="list-unstyled">
+                    {% for item in only_in_mitre %}
+                    <li>
+                       <a href="{% url 'groups' %}?g={{ item.mitre_id }}" class="mitre-link">{{ item.mitre_id }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not error and stats.total_mitre == 0 %}
+        <div class="alert alert-info">
+            No MITRE data loaded. Click <a href="?refresh=true">Refresh Data</a> to try again.
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    function toggleAccordion(contentId, header) {
+        const content = document.getElementById(contentId);
+        const isActive = header.classList.contains('active');
+        
+        // Toggle this specific accordion
+        if (isActive) {
+            // Close it
+            content.classList.remove('show');
+            header.classList.remove('active');
+        } else {
+            // Open it
+            content.classList.add('show');
+            header.classList.add('active');
+        }
+    }
+
+    // REMOVE or COMMENT OUT the auto-click code below
+    // Open first accordion by default if there are unmatched items
+    /*
+    document.addEventListener('DOMContentLoaded', function() {
+        const unmatchedMispContent = document.getElementById('unmatchedMispContent');
+        const unmatchedMitreContent = document.getElementById('unmatchedMitreContent');
+        
+        if (unmatchedMispContent) {
+            unmatchedMispContent.parentElement.querySelector('.accordion-header').click();
+        } else if (unmatchedMitreContent) {
+            unmatchedMitreContent.parentElement.querySelector('.accordion-header').click();
+        }
+    });
+    */
+</script>
+
+</body>
+</html>

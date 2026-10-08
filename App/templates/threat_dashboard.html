@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Actor Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #0b0f14;
+            --bg-panel: #111827;
+            --bg-panel-2: #0f172a;
+            --bg-hover: #1e293b;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-accent: #60a5fa;
+            --border-subtle: #1f2937;
+            --danger: #ef4444;
+            --glow: 0 0 12px rgba(96,165,250,0.25);
+            --primary-gradient: linear-gradient(135deg, #60a5fa, #818cf8);
+        }
+
+        * { box-sizing: border-box; }
+
+        .navbar {
+            height: 58px;
+            display: flex;
+            align-items: center;
+            background: #020617;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .navbar-brand {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .danger-dot { color: var(--danger); font-size: 14px; text-shadow: 0 0 6px rgba(239,68,68,0.7); }
+
+        .navbar-nav { display: flex; gap: 18px; }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-main);
+            background: var(--bg-hover);
+            box-shadow: var(--glow);
+        }
+
+        .nav-link i { font-size: 13px; color: var(--text-accent); }
+
+        html, body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: linear-gradient(180deg, #020617, #0b0f14);
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        .main-container { display: flex; flex-direction: column; height: calc(100vh - 58px); }
+
+        .content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, #0f172a, #020617 60%);
+        }
+
+        h1 { font-size: 28px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+
+        .header-subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; }
+
+        .header-actions { display: flex; gap: 12px; justify-content: flex-end; margin-bottom: 32px; }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary { background: var(--text-accent); color: #000; }
+        .btn-primary:hover { background: #93bbfc; box-shadow: var(--glow); }
+
+        .btn-outline { background: transparent; border: 1px solid var(--text-accent); color: var(--text-accent); }
+        .btn-outline:hover { background: var(--bg-hover); box-shadow: var(--glow); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-panel);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            text-align: center;
+        }
+
+        .stat-card h3 { font-size: 32px; margin: 12px 0 8px; color: var(--text-accent); }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .search-box { position: relative; }
+        .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; }
+
+        .search-input, .select-filter {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 15px;
+        }
+
+        .select-filter { padding-left: 16px; }
+
+        .threat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .threat-card {
+            background: var(--bg-panel);
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .threat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--glow);
+            border-color: var(--text-accent);
+        }
+
+        .threat-card h5 {
+            margin: 0 0 12px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .threat-level {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .level-advanced { background: #ef4444; }
+        .level-intermediate { background: #f97316; }
+        .level-novice, .level-basic { background: #22c55e; }
+        .level-strategic { background: #a78bfa; }
+        .level-unknown { background: #6b7280; }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .tag-country { background: #172554; color: #93bbfc; border: 1px solid #1e40af; }
+        .tag-apt { background: #451a03; color: #fb923c; border: 1px solid #f97316; }
+        .tag-refs { background: #2d1b4e; color: #c4b5fd; border: 1px solid #9333ea; }
+        .tag-sector { background: #083344; color: #67e8f9; border: 1px solid #0891b2; }
+
+        .btn-details {
+            margin-top: 12px;
+            background: transparent;
+            border: 1px solid var(--text-accent);
+            color: var(--text-accent);
+            padding: 6px 14px;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-details:hover {
+            background: var(--text-accent);
+            color: #000;
+            box-shadow: var(--glow);
+        }
+
+        .footer-info {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer-info a { color: var(--text-accent); text-decoration: none; }
+        .footer-info a:hover { text-decoration: underline; }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 32px;
+            padding: 16px;
+            background: var(--bg-panel);
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--text-accent);
+            color: var(--text-accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) { background: var(--text-accent); color: #000; }
+        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .page-info { color: var(--text-muted); font-size: 14px; }
+
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #111827 25%, #1e293b 50%, #111827 75%);
+            background-size: 200% 100%;
+            animation: loading 1.8s infinite;
+            border-radius: 6px;
+        }
+
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        .skeleton-title { height: 24px; width: 70%; margin-bottom: 12px; }
+        .skeleton-text { height: 16px; margin: 8px 0; }
+        .skeleton-tag { height: 24px; width: 90px; display: inline-block; margin-right: 8px; }
+        .skeleton-circle { width: 28px; height: 28px; border-radius: 50%; }
+
+        @media (max-width: 992px) {
+            .threat-grid { grid-template-columns: 1fr; }
+            .filters { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <span class="danger-dot">●</span> ThreatCluster
+        </a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="{% url 'tools' %}"><i class="fas fa-database"></i> Tools</a>
+            <a class="nav-link" href="{% url 'groups' %}"><i class="fas fa-user-secret"></i> Groups</a>
+            <a class="nav-link" href="{% url 'actor_matching' %}"><i class="fas fa-robot"></i> Matching</a>
+            <a class="nav-link active" href="{% url 'threat_dashboard' %}"><i class="fas fa-shield-alt"></i> Actors</a>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <div class="content">
+        <h1><i class="fas fa-shield-alt"></i> MISP Threat Intelligence</h1>
+        <p class="header-subtitle">Real-time threat actor monitoring from MISP Galaxy (50 per page • bidirectional intelligent filters)</p>
+
+        <div class="header-actions">
+            <button id="refreshBtn" class="btn btn-primary" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt"></i> Refresh Data
+            </button>
+            <button id="clearFiltersBtn" class="btn btn-outline" onclick="clearFilters()">
+                <i class="fas fa-times"></i> Clear Filters
+            </button>
+            <a href="?format=json" class="btn btn-outline">
+                <i class="fas fa-download"></i> Export JSON
+            </a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3><i class="fas fa-user-secret"></i> {{ total_actors }}</h3>
+                <p>Total Actors</p>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-clock"></i> {{ last_update|timesince }}</h3>
+                <p>Last Updated</p>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-globe"></i> {{ source_countries_display|length }}</h3>
+                <p>Source Countries</p>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-filter"></i> <span id="visibleCount">{{ total_actors }}</span></h3>
+                <p>Filtered Results</p>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search actors, descriptions, tags, countries...">
+            </div>
+            <select id="sourceCountryFilter" class="select-filter">
+                <option value="">All Source Countries</option>
+                {% for display_name, code, count in source_countries_display %}
+                <option value="{{ code|lower }}">{{ display_name }} ({{ count }})</option>
+                {% endfor %}
+            </select>
+            <select id="victimCountryFilter" class="select-filter">
+                <option value="">All Victim Countries</option>
+                {% for display_name, code, count in victim_countries_display %}
+                <option value="{{ code|lower }}">{{ display_name }} ({{ count }})</option>
+                {% endfor %}
+            </select>
+            <select id="victimSectorFilter" class="select-filter">
+                <option value="">All Victim Sectors</option>
+                {% for sector_name, count in victim_sectors %}
+                <option value="{{ sector_name|lower }}">{{ sector_name }} ({{ count }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="threat-grid" id="threatGrid"></div>
+
+        <div class="pagination" id="pagination">
+            <button class="pagination-btn" id="prevPage"><i class="fas fa-chevron-left"></i> Prev</button>
+            <span class="page-info" id="pageInfo">Page 1 of 1</span>
+            <button class="pagination-btn" id="nextPage">Next <i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <div class="footer-info">
+            <p>
+                <i class="fas fa-database"></i> Data sourced from
+                <a href="https://github.com/MISP/misp-galaxy" target="_blank">MISP Galaxy</a>
+                | Total records: {{ total_actors }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const actorsData = [
+        {% for actor in actors %}
+        {
+            name: "{{ actor.value|escapejs }}",
+            description: "{{ actor.description|escapejs }}",
+            meta: {{ actor.meta_json|safe }},
+            source_countries: {{ actor.source_country_names|safe|default:'[]' }},
+            victim_sectors: {{ actor.victim_sectors|safe|default:'[]' }},
+            source_countries_str: "{{ actor.source_countries_str|default:''|lower }}",
+            victim_countries_str: "{{ actor.victim_countries_str|default:''|lower }}",
+            victim_sectors_str: "{{ actor.victim_sectors_str|default:''|lower }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    const itemsPerPage = 50;
+    let currentPage = 1;
+    let filteredIndices = Array.from({length: actorsData.length}, (_, i) => i);
+
+    const threatGrid = document.getElementById('threatGrid');
+    const sourceFilter = document.getElementById('sourceCountryFilter');
+    const victimFilter = document.getElementById('victimCountryFilter');
+    const sectorFilter = document.getElementById('victimSectorFilter');
+
+    // Store original options
+    const originalSourceOptions = Array.from(sourceFilter.options);
+    const originalVictimOptions = Array.from(victimFilter.options);
+
+    function createSkeleton() {
+        return `
+        <div class="threat-card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text" style="width:80%;"></div>
+            <div style="margin:12px 0;">
+                <span class="skeleton skeleton-tag"></span>
+                <span class="skeleton skeleton-tag"></span>
+            </div>
+            <div class="skeleton" style="height:36px; width:110px;"></div>
+        </div>`;
+    }
+
+    function createCard(actor) {
+        const sourceTags = actor.source_countries.map(c => 
+            `<span class="tag tag-country"><i class="fas fa-flag"></i> ${c}</span>`
+        ).join('');
+
+        const sectorTags = actor.victim_sectors.map(s => 
+            `<span class="tag tag-sector"><i class="fas fa-building"></i> ${s}</span>`
+        ).join('');
+
+        const aptTag = actor.name.toLowerCase().includes('apt') ? '<span class="tag tag-apt">APT</span>' : '';
+
+        const refsTag = actor.meta.refs ? `<span class="tag tag-refs"><i class="fas fa-link"></i> ${actor.meta.refs.length} refs</span>` : '';
+
+        const sophistication = actor.meta.sophistication ? 
+            `<span class="threat-level level-${actor.meta.sophistication.toLowerCase()}">
+                ${actor.meta.sophistication[0].toUpperCase()}
+            </span>` : '';
+
+        const desc = actor.description.length > 160 
+            ? actor.description.substring(0, 160) + '...' 
+            : actor.description;
+
+        const encodedName = encodeURIComponent(actor.name);
+
+        return `
+        <div class="threat-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                <h5><i class="fas fa-user-secret" style="color:var(--text-accent);"></i> ${actor.name}</h5>
+                ${sophistication}
+            </div>
+            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:12px;">${desc}</p>
+            <div style="margin-bottom:12px;">${sourceTags}${sectorTags}${aptTag}${refsTag}</div>
+            <a href="/threats/${encodedName}/" class="btn-details">
+                <i class="fas fa-info-circle"></i> Details
+            </a>
+        </div>`;
+    }
+
+    function renderPage() {
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = filteredIndices.slice(start, end);
+
+        if (pageItems.length === 0) {
+            threatGrid.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:60px;">
+                <i class="fas fa-exclamation-triangle fa-3x" style="color:#f59e0b;"></i>
+                <h3>No threat actors found</h3>
+                <p>Try adjusting your filters</p>
+            </div>`;
+            return;
+        }
+
+        threatGrid.innerHTML = pageItems.map(idx => createCard(actorsData[idx])).join('');
+    }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(filteredIndices.length / itemsPerPage);
+        document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = currentPage >= totalPages;
+        document.getElementById('pagination').style.display = totalPages > 1 ? 'flex' : 'none';
+        document.getElementById('visibleCount').textContent = filteredIndices.length;
+    }
+
+    // Bidirectional Cascading for Countries (no change for sectors, as it's independent)
+    function updateVictimCountries() {
+        const selectedSource = sourceFilter.value.trim().toLowerCase();
+        victimFilter.innerHTML = '<option value="">All Victim Countries</option>';
+        if (!selectedSource) {
+            originalVictimOptions.forEach(opt => {
+                if (opt.value !== '') victimFilter.add(opt.cloneNode(true));
+            });
+            return;
+        }
+        const relevantActors = actorsData.filter(a => a.source_countries_str.includes(selectedSource));
+        const victimCount = {};
+        relevantActors.forEach(a => {
+            if (a.victim_countries_str) {
+                a.victim_countries_str.split(',').forEach(c => {
+                    const code = c.trim();
+                    if (code) victimCount[code] = (victimCount[code] || 0) + 1;
+                });
+            }
+        });
+        Object.keys(victimCount).sort((a,b) => a.localeCompare(b)).forEach(code => {
+            const name = code.charAt(0).toUpperCase() + code.slice(1);
+            const opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = `${name} (${victimCount[code]})`;
+            victimFilter.add(opt);
+        });
+    }
+
+    function updateSourceCountries() {
+        const selectedVictim = victimFilter.value.trim().toLowerCase();
+        sourceFilter.innerHTML = '<option value="">All Source Countries</option>';
+        if (!selectedVictim) {
+            originalSourceOptions.forEach(opt => {
+                if (opt.value !== '') sourceFilter.add(opt.cloneNode(true));
+            });
+            return;
+        }
+        const relevantActors = actorsData.filter(a => a.victim_countries_str.includes(selectedVictim));
+        const sourceCount = {};
+        relevantActors.forEach(a => {
+            if (a.source_countries_str) {
+                a.source_countries_str.split(',').forEach(c => {
+                    const code = c.trim();
+                    if (code) sourceCount[code] = (sourceCount[code] || 0) + 1;
+                });
+            }
+        });
+        Object.keys(sourceCount).sort((a,b) => a.localeCompare(b)).forEach(code => {
+            const name = code.toUpperCase();
+            const opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = `${name} (${sourceCount[code]})`;
+            sourceFilter.add(opt);
+        });
+    }
+
+    // Event listeners for cascading
+    sourceFilter.addEventListener('change', () => {
+        updateVictimCountries();
+        filterAndRender();
+    });
+    victimFilter.addEventListener('change', () => {
+        updateSourceCountries();
+        filterAndRender();
+    });
+
+    function filterAndRender() {
+        const search = document.getElementById('searchInput').value.toLowerCase().trim();
+        const source = sourceFilter.value.toLowerCase();
+        const victim = victimFilter.value.toLowerCase();
+        const sector = sectorFilter.value.toLowerCase();
+
+        filteredIndices = actorsData
+            .map((a, i) => ({a, i}))
+            .filter(({a}) => {
+                const matchesSearch = !search || 
+                    a.name.toLowerCase().includes(search) ||
+                    a.description.toLowerCase().includes(search) ||
+                    a.source_countries_str.includes(search) ||
+                    a.victim_countries_str.includes(search) ||
+                    a.victim_sectors_str.includes(search) ||
+                    JSON.stringify(a.meta).toLowerCase().includes(search);
+
+                const matchesSource = !source || a.source_countries_str.includes(source);
+                const matchesVictim = !victim || a.victim_countries_str.includes(victim);
+                const matchesSector = !sector || a.victim_sectors_str.includes(sector);
+
+                return matchesSearch && matchesSource && matchesVictim && matchesSector;
+            })
+            .map(({i}) => i);
+
+        currentPage = 1;
+        renderPage();
+        updatePagination();
+    }
+
+    function clearFilters() {
+        document.getElementById('searchInput').value = '';
+        sourceFilter.value = '';
+        victimFilter.value = '';
+        sectorFilter.value = '';
+        updateVictimCountries();
+        updateSourceCountries();
+        filterAndRender();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        threatGrid.innerHTML = Array(50).fill(createSkeleton()).join('');
+        setTimeout(() => {
+            filteredIndices = Array.from({length: actorsData.length}, (_, i) => i);
+            renderPage();
+            updatePagination();
+        }, 300);
+
+        document.getElementById('searchInput').addEventListener('input', () => setTimeout(filterAndRender, 300));
+
+        document.getElementById('prevPage').onclick = () => {
+            if (currentPage > 1) { currentPage--; renderPage(); updatePagination(); window.scrollTo(0, 0); }
+        };
+        document.getElementById('nextPage').onclick = () => {
+            const totalPages = Math.ceil(filteredIndices.length / itemsPerPage);
+            if (currentPage < totalPages) { currentPage++; renderPage(); updatePagination(); window.scrollTo(0, 0); }
+        };
+
+        sectorFilter.addEventListener('change', filterAndRender);
+    });
+</script>
+
+</body>
+</html>

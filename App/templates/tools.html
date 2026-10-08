@@ -1,0 +1,558 @@
+<!-- tools.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools & Malware</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #ff8c00;
+            --danger-color: #ff4444;
+            --warning-color: #ffaa00;
+            --success-color: #00ff88;
+            --info-color: #44aaff;
+            --dark-bg: #1e1e1e;
+            --darker-bg: #141414;
+            --card-bg: #2d2d2d;
+            --border-color: #444;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            
+            /* Additional colors for tools template */
+            --bg-main: #0b0f14;
+            --bg-panel: #111827;
+            --bg-hover: #1e293b;
+            --text-accent: #60a5fa;
+            --border-subtle: #1f2937;
+            --danger: #ef4444;
+            --tool: #38bdf8;
+            --malware: #fb7185;
+            --badge-bg: #1f2937;
+            --table-header: #020617;
+            --glow: 0 0 12px rgba(96,165,250,0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--darker-bg);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Fix dropdown dark theme */
+        .dropdown-menu {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--border-color);
+        }
+        
+        .dropdown-item {
+            color: var(--text-primary) !important;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(11, 59, 114, 0.1) !important;
+            color: var(--info-color) !important;}
+
+        /* Filters Section */
+        .filters-section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filters-section h2 {
+            margin: 0;
+            color: var(--info-color);
+            font-size: 24px;
+            flex: 1;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            background: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .filter-group select option {
+            background: var(--dark-bg);
+            color: var(--text-primary);
+        }
+
+        .clear-filters {
+            font-size: 14px;
+            color: var(--info-color);
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid var(--info-color);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .clear-filters:hover {
+            background: var(--info-color);
+            color: #000;
+        }
+
+        .stats {
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--tool), var(--malware));
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.3), 0 8px 32px rgba(0,0,0,0.3);
+            border-color: var(--primary-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        .type-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tool-badge {
+            background: rgba(56,189,248,0.2);
+            color: var(--tool);
+            border: 1px solid var(--tool);
+        }
+
+        .malware-badge {
+            background: rgba(251,113,133,0.2);
+            color: var(--malware);
+            border: 1px solid var(--malware);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            background: rgba(255, 140, 0, 0.1);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .card-meta .matrix {
+            background: rgba(255, 140, 0, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            color: var(--primary-color);
+        }
+
+        .revoked {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .alert-warning {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 64px 32px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .empty-state a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                min-width: auto;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+
+        /* Navbar - Matching Dashboard */
+        .navbar {
+            background: var(--dark-bg) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--info-color) !important;
+        }
+
+        .navbar-brand .danger-dot {
+            color: var(--danger-color);
+            margin-right: 8px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            padding: 8px 16px !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--info-color) !important;
+            background: rgba(11, 59, 114, 0.1) !important;
+        }
+
+        .nav-link.active {
+            color: var(--info-color) !important;
+        }
+
+        .dropdown-toggle::after {
+            color: var(--text-secondary);
+        }
+
+        .navbar-toggler {
+            border-color: var(--border-color);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 140, 0, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Debug info */
+        .debug {
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid var(--warning-color);
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation - Exact Same as Dashboard -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--dark-bg); border-bottom: 1px solid var(--border-color);">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/">
+                <span class="danger-dot"></span> <i class="fas fa-shield-alt" style="margin-left: 8px;"></i> TIARF
+            </a>
+            
+            <!-- Navbar Toggler for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{% url 'library' %}"><i class="fas fa-database me-1"></i> Library</a>
+                    
+                    <!-- Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-secret me-1"></i> Threat Management
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'tools' %}"><i class="fas fa-tools me-2"></i> Tools</a></li>
+                            <li><a class="dropdown-item" href="{% url 'groups' %}"><i class="fas fa-users me-2"></i> Groups</a></li>
+                        </ul>
+                    </li>
+                    
+                    <a href="{% url 'chatbot' %}" class="nav-link"><i class="fas fa-robot me-1"></i> AI Analyst</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="content">
+            {% if error %}
+                <div class="alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+                </div>
+            {% endif %}
+
+         
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <h2><i class="fas fa-tools"></i> Tools & Malware</h2>
+                
+                <div class="filter-group">
+                    <label for="type-filter">Type</label>
+                    <select id="type-filter" onchange="applyFilters()">
+                        {% for t in available_types %}
+                            <option value="{{ t }}" {% if type_filter == t %}selected{% endif %}>
+                                {% if t == 'all' %}All{% else %}{{ t|title }}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="category-filter">Category</label>
+                    <select id="category-filter" onchange="applyFilters()">
+                        {% for c in available_categories %}
+                            <option value="{{ c }}" {% if category_filter == c %}selected{% endif %}>
+                                {% if c == 'all' %}All{% else %}{{ c }}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                {% if type_filter != 'all' or category_filter != 'all' %}
+                    <a href="{% url 'tools' %}" class="clear-filters mt-3">Clear Filters</a>
+                {% endif %}
+            </div>
+
+            <p class="stats"><strong>Total: {{ total_tools|default:0 }}</strong></p>
+
+            {% if tools_list %}
+                <div class="cards-grid">
+                    {% for tool in tools_list %}
+                        <a href="{% url 'tools_detail' tool.id %}" class="card">
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    {% if tool.type == "tool" %}
+                                        <i class="fas fa-wrench card-icon" style="color: var(--tool);"></i>
+                                    {% else %}
+                                        <i class="fas fa-bug card-icon" style="color: var(--malware);"></i>
+                                    {% endif %}
+                                    <h3 class="card-title">
+                                        {{ tool.name }}
+                                        {% if tool.category and tool.category != 'Uncategorized' %}
+                                            {% comment %} <span class="category-badge">{{ tool.category }}</span> {% endcomment %}
+                                        {% endif %}
+                                    </h3>
+                                </div>
+                                <span class="type-badge {% if tool.type == 'tool' %}tool-badge{% else %}malware-badge{% endif %}">
+                                    {{ tool.type|title }}
+                                </span>
+                                {% if tool.is_dual_use %}
+    <span class="type-badge" style="background: rgba(255,193,7,0.2); color: #ffc107; border: 1px solid #ffc107;">
+        <i class="fas fa-exclamation-triangle me-1"></i> Dual-Use
+    </span>
+{% endif %}
+                            </div>
+                            {% if tool.revoked %}
+                                <p class="revoked">⚠ Revoked / Deprecated</p>
+                            {% endif %}
+                            {% if tool.description %}
+                                <p class="card-description">{{ tool.description }}</p>
+                            {% endif %}
+                            <div class="card-meta">
+                                <span>ID: {{ tool.id }}</span>
+                                <span class="matrix">Matrix: {{ tool.matrix }}</span>
+                            </div>
+                            {% if tool.aliases %}
+                                <div class="card-meta">
+                                    <span>Aliases: {{ tool.aliases|join:", " }}</span>
+                                </div>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No tools or malware found</h3>
+                    <p>Try adjusting your filters or <a href="?refresh=true">refreshing the data</a>.</p>
+                </div>
+            {% endif %}
+            
+            <!-- Footer -->
+            <div class="footer">
+                All Right Reserved &copy; 2026 TIARF • 
+                <span class="text-primary"><i class="fas fa-tools me-1"></i> Tools & Malware Database</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function applyFilters() {
+            const typeFilter = document.getElementById('type-filter').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+            const url = new URL(window.location);
+            url.searchParams.set('type', typeFilter);
+            url.searchParams.set('category', categoryFilter);
+            window.location.href = url.toString();
+        }
+        
+        // Add active class to current page nav item
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Special handling for dropdown items
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach(item => {
+                if (item.getAttribute('href') === currentPath) {
+                    const dropdownToggle = document.querySelector('.dropdown-toggle');
+                    if (dropdownToggle) {
+                        dropdownToggle.classList.add('active');
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

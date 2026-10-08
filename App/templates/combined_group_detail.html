@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Group Details - MITRE & MISP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+      
+        :root {
+            --bg-main: #0b0f14;
+            --bg-panel: #111827;
+            --bg-panel-2: #0f172a;
+            --bg-hover: #1e293b;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-accent: #60a5fa;
+            --border-subtle: #1f2937;
+            --danger: #ef4444;
+            --warning-bg: #3b2f13;
+            --warning-border: #92400e;
+            --success: #10b981;
+            --glow: 0 0 12px rgba(96,165,250,0.25);
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #020617, #0b0f14);
+            color: var(--text-main);
+        }
+        
+        /* Navbar - same as other pages */
+        .navbar {
+            height: 58px;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(180deg, #020617, #020617);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .navbar-brand {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .danger-dot { color: var(--danger); font-size: 14px; text-shadow: 0 0 6px rgba(239,68,68,0.7); }
+        
+        .navbar-nav { display: flex; gap: 18px; }
+        
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .nav-link:hover { color: var(--text-main); background: var(--bg-hover); box-shadow: var(--glow); }
+        
+        .nav-link i { font-size: 13px; color: var(--text-accent); }
+        
+        .content {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-accent);
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: var(--bg-panel);
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .back-link:hover { background: var(--bg-hover); }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .section-header h2 {
+            margin: 0;
+            color: var(--text-accent);
+            font-size: 24px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: var(--bg-panel);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .info-card h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--text-accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-card p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .data-source-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .mitre-badge { background: #1e40af; color: #93bbfc; }
+        .misp-badge { background: #065f46; color: #6ee7b7; }
+        
+        .combined-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-panel);
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .combined-header h1 {
+            margin: 0;
+            color: var(--text-main);
+            font-size: 32px;
+        }
+        
+        .data-source-indicator {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .source-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .source-mitre { background: rgba(30, 64, 175, 0.2); color: #93bbfc; border: 1px solid #1e40af; }
+        .source-misp { background: rgba(6, 95, 70, 0.2); color: #6ee7b7; border: 1px solid #065f46; }
+        
+        .tab-container {
+            display: flex;
+            border-bottom: 1px solid var(--border-subtle);
+            margin: 30px 0 20px 0;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover { color: var(--text-main); }
+        .tab.active { color: var(--text-accent); border-bottom-color: var(--text-accent); }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: var(--bg-panel-2);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .tag-country { background: #172554; color: #93bbfc; border: 1px solid #1e40af; }
+        .tag-sector { background: #083344; color: #67e8f9; border: 1px solid #0891b2; }
+        .tag-technique { background: #2d1b4e; color: #c4b5fd; border: 1px solid #9333ea; }
+        .tag-software { background: #451a03; color: #fb923c; border: 1px solid #f97316; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-panel);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        th {
+            background: var(--bg-panel-2);
+            color: var(--text-accent);
+            font-size: 13px;
+        }
+        
+        tr:hover td { background: rgba(96,165,250,0.08); }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        
+        .no-data i { font-size: 48px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <span class="danger-dot">●</span> ThreatCluster
+        </a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="{% url 'tools' %}"><i class="fas fa-database"></i> Tools</a>
+            <a class="nav-link" href="{% url 'groups' %}"><i class="fas fa-user-secret"></i> Groups</a>
+            <a class="nav-link" href="{% url 'actor_matching' %}"><i class="fas fa-robot"></i> Matching</a>
+            <a class="nav-link" href="{% url 'threat_dashboard' %}"><i class="fas fa-cog"></i> Actors</a>
+        </div>
+    </div>
+</nav>
+
+<div class="content">
+    <!-- Back link -->
+    <a href="{% url 'actor_matching' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Actor Matching
+    </a>
+    
+    {% if error %}
+    <div style="background: var(--warning-bg); border: 1px solid var(--warning-border); color: #fbbf24; padding: 14px; border-radius: 8px; margin-bottom: 24px;">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <!-- Combined Header -->
+    <div class="combined-header">
+        <div>
+            <h1>
+                {% if mitre_group %}
+                    {{ mitre_group.name }}
+                {% elif misp_actor %}
+                    {{ misp_actor.name }}
+                {% endif %}
+            </h1>
+            <div style="margin-top: 10px;">
+                {% if mitre_group %}
+                    <span style="color: var(--text-muted);"><code>{{ mitre_group.id }}</code></span>
+                {% endif %}
+               
+              
+            </div>
+        </div>
+        
+        <div class="data-source-indicator">
+            {% if has_mitre_data %}
+            <div class="source-indicator source-mitre">
+                <i class="fas fa-shield-alt"></i> MITRE ATT&CK
+            </div>
+            {% endif %}
+            {% if has_misp_data %}
+            <div class="source-indicator source-misp">
+                <i class="fas fa-database"></i> MISP Galaxy
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="tab-container">
+        <button class="tab active" onclick="switchTab('overview')">
+            <i class="fas fa-eye"></i> Overview
+        </button>
+        <button class="tab" onclick="switchTab('mitre')" {% if not has_mitre_data %}disabled style="opacity: 0.5;"{% endif %}>
+            <i class="fas fa-shield-alt"></i> MITRE Details
+        </button>
+        <button class="tab" onclick="switchTab('misp')" {% if not has_misp_data %}disabled style="opacity: 0.5;"{% endif %}>
+            <i class="fas fa-database"></i> MISP Details
+        </button>
+        <button class="tab" onclick="switchTab('techniques')" {% if not has_mitre_data %}disabled style="opacity: 0.5;"{% endif %}>
+            <i class="fas fa-tools"></i> Techniques
+        </button>
+    </div>
+    
+    <!-- Overview Tab -->
+    <div id="overview" class="tab-content active">
+        <div class="info-grid">
+            <!-- MITRE Overview -->
+            {% if has_mitre_data %}
+            <div class="info-card">
+                <h3><i class="fas fa-shield-alt"></i> MITRE ATT&CK</h3>
+                <p><strong>Name:</strong> {{ mitre_group.name }}</p>
+                <p><strong>ID:</strong> <code>{{ mitre_group.id }}</code></p>
+                <p><strong>Description:</strong> {{ mitre_group.description|truncatewords:50 }}</p>
+                {% if mitre_group.aliases %}
+                <p><strong>Aliases:</strong> {{ mitre_group.aliases|join:", "|truncatewords:10 }}</p>
+                {% endif %}
+                <p><strong>Techniques:</strong> {{ mitre_group.techniques|length }}</p>
+                <p><strong>Software:</strong> {{ mitre_group.software|length }}</p>
+            </div>
+            {% endif %}
+            
+            <!-- MISP Overview -->
+            {% if has_misp_data %}
+            <div class="info-card">
+                <h3><i class="fas fa-database"></i> MISP Galaxy</h3>
+                <p><strong>Name:</strong> {{ misp_actor.name }}</p>
+                <p><strong>UUID:</strong> <code>{{ misp_actor.uuid|slice:":8" }}...</code></p>
+                <p><strong>Description:</strong> {{ misp_actor.description|truncatewords:50 }}</p>
+                {% if misp_actor.source_countries %}
+                <p><strong>Source Countries:</strong> {{ misp_actor.source_countries|join:", " }}</p>
+                {% endif %}
+                {% if misp_actor.victim_sectors %}
+                <p><strong>Target Sectors:</strong> {{ misp_actor.victim_sectors|join:", " }}</p>
+                {% endif %}
+                {% if misp_actor.sophistication %}
+                <p><strong>Sophistication:</strong> {{ misp_actor.sophistication }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Common Aliases -->
+        {% if mitre_group.aliases or misp_actor.synonyms %}
+        <div class="section-header">
+            <h2><i class="fas fa-users"></i> Known Aliases</h2>
+        </div>
+        <div class="info-card">
+            <div class="tag-container">
+                {% if mitre_group.aliases %}
+                {% for alias in mitre_group.aliases %}
+                <span class="tag mitre-badge">{{ alias }}</span>
+                {% endfor %}
+                {% endif %}
+                {% if misp_actor.synonyms %}
+                {% for alias in misp_actor.synonyms %}
+                <span class="tag misp-badge">{{ alias }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- MITRE Details Tab -->
+    <div id="mitre" class="tab-content">
+        {% if has_mitre_data %}
+        <div class="info-grid">
+            <div class="info-card">
+                <h3><i class="fas fa-info-circle"></i> MITRE Information</h3>
+                <p><strong>MITRE ID:</strong> <code>{{ mitre_group.id }}</code></p>
+                <p><strong>Matrices:</strong> {{ mitre_group.matrices|join:", " }}</p>
+                <p><strong>Created:</strong> {{ mitre_group.created }}</p>
+                <p><strong>Modified:</strong> {{ mitre_group.modified }}</p>
+                {% if mitre_group.contributors %}
+                <p><strong>Contributors:</strong> {{ mitre_group.contributors|join:", " }}</p>
+                {% endif %}
+                {% if mitre_group.revoked %}
+                <p><strong style="color: var(--danger);">⚠ Revoked / Deprecated</strong></p>
+                {% endif %}
+            </div>
+            
+            <div class="info-card">
+                <h3><i class="fas fa-bullseye"></i> Objectives & Targets</h3>
+                {% if mitre_group.motivation %}
+                <p><strong>Motivation:</strong> {{ mitre_group.motivation|join:", " }}</p>
+                {% endif %}
+                {% if mitre_group.objectives %}
+                <p><strong>Objectives:</strong> {{ mitre_group.objectives|join:", " }}</p>
+                {% endif %}
+                
+                {% if mitre_group.target_regions %}
+                <p><strong>Target Regions:</strong></p>
+                <div class="tag-container">
+                    {% for region in mitre_group.target_regions %}
+                    <span class="tag tag-country">{{ region }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% if mitre_group.target_sectors %}
+                <p><strong>Target Sectors:</strong></p>
+                <div class="tag-container">
+                    {% for sector in mitre_group.target_sectors %}
+                    <span class="tag tag-sector">{{ sector }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Full Description -->
+        {% if mitre_group.description %}
+        <div class="section-header">
+            <h2><i class="fas fa-file-alt"></i> Description</h2>
+        </div>
+        <div class="info-card">
+            <p>{{ mitre_group.description|linebreaks }}</p>
+        </div>
+        {% endif %}
+        
+        <!-- External References -->
+        {% if mitre_group.external_references %}
+        <div class="section-header">
+            <h2><i class="fas fa-external-link-alt"></i> References & Reports</h2>
+        </div>
+        <div class="info-card">
+            <ul style="margin: 0; padding-left: 20px;">
+                {% for ref in mitre_group.external_references %}
+                {% if ref.url %}
+                <li>
+                    <a href="{{ ref.url }}" target="_blank" style="color: var(--text-accent); text-decoration: none;">
+                        <i class="fas fa-link"></i>
+                        {% if ref.source_name %}{{ ref.source_name }}{% else %}Reference{% endif %}
+                        {% if ref.description %}- {{ ref.description }}{% endif %}
+                    </a>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-shield-alt"></i>
+            <h3>No MITRE Data Available</h3>
+            <p>This group is not present in MITRE ATT&CK database</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- MISP Details Tab -->
+    <div id="misp" class="tab-content">
+        {% if has_misp_data %}
+        <div class="info-grid">
+            <div class="info-card">
+                <h3><i class="fas fa-info-circle"></i> MISP Information</h3>
+                <p><strong>Name:</strong> {{ misp_actor.name }}</p>
+                <p><strong>UUID:</strong> <code>{{ misp_actor.uuid }}</code></p>
+                <p><strong>Description:</strong> {{ misp_actor.description|linebreaks }}</p>
+                
+                {% if misp_actor.sophistication %}
+                <p><strong>Sophistication:</strong> {{ misp_actor.sophistication }}</p>
+                {% endif %}
+                
+                {% if misp_actor.resource_level %}
+                <p><strong>Resource Level:</strong> {{ misp_actor.resource_level }}</p>
+                {% endif %}
+                
+                {% if misp_actor.primary_motivation %}
+                <p><strong>Primary Motivation:</strong> {{ misp_actor.primary_motivation }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="info-card">
+                <h3><i class="fas fa-globe"></i> Geography & Targets</h3>
+                {% if misp_actor.source_countries %}
+                <p><strong>Source Countries:</strong></p>
+                <div class="tag-container">
+                    {% for country in misp_actor.source_countries %}
+                    <span class="tag tag-country">{{ country }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% if misp_actor.victim_sectors %}
+                <p><strong>Target Sectors:</strong></p>
+                <div class="tag-container">
+                    {% for sector in misp_actor.victim_sectors %}
+                    <span class="tag tag-sector">{{ sector }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Metadata -->
+        <div class="section-header">
+            <h2><i class="fas fa-database"></i> Metadata</h2>
+        </div>
+        <div class="info-card">
+            {% if misp_actor.meta %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in misp_actor.meta.items %}
+                    <tr>
+                        <td><strong>{{ key }}</strong></td>
+                        <td>
+                            {% if value|length > 100 %}
+                            <pre style="background: var(--bg-panel-2); padding: 10px; border-radius: 6px; font-size: 0.9rem; max-height: 200px; overflow-y: auto;">
+                                {{ value|pprint }}
+                            </pre>
+                            {% else %}
+                            {{ value }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: var(--text-muted);">No additional metadata available</p>
+            {% endif %}
+        </div>
+        
+      <!-- References -->
+{% if misp_actor.refs %}
+<div class="section-header">
+    <h2><i class="fas fa-link"></i> References</h2>
+</div>
+<div class="info-card">
+    <ul style="margin: 0; padding-left: 20px;">
+        {% for ref in misp_actor.refs %}
+        {% if ref %}
+        <li>
+            {% if 'http://' in ref or 'https://' in ref %}
+            <a href="{{ ref }}" target="_blank" style="color: var(--text-accent); text-decoration: none;">
+                <i class="fas fa-external-link-alt"></i> {{ ref|truncatechars:80 }}
+            </a>
+            {% else %}
+            {{ ref }}
+            {% endif %}
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+        
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-database"></i>
+            <h3>No MISP Data Available</h3>
+            <p>This group is not present in MISP Galaxy database</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Techniques Tab -->
+    <div id="techniques" class="tab-content">
+        {% if has_mitre_data and mitre_group.techniques %}
+        <div class="section-header">
+            <h2><i class="fas fa-tools"></i> Techniques Used ({{ mitre_group.techniques|length }})</h2>
+        </div>
+        <div class="info-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Domain</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tech in mitre_group.techniques %}
+                    <tr>
+                        <td>
+                            <a href="https://attack.mitre.org/techniques/{{ tech.id }}/" target="_blank" style="color: var(--text-accent); text-decoration: none;">
+                                {{ tech.id }}
+                            </a>
+                        </td>
+                        <td>{{ tech.name }}</td>
+                        <td>{{ tech.domain|default:"Enterprise" }}</td>
+                        <td>{{ tech.use|truncatewords:30|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Software -->
+        {% if mitre_group.software %}
+        <div class="section-header">
+            <h2><i class="fas fa-code"></i> Software Used ({{ mitre_group.software|length }})</h2>
+        </div>
+        <div class="info-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Techniques</th>
+                        <th>References</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in mitre_group.software %}
+                    <tr>
+                        <td>
+                            {% if s.type == "tool" %}
+                            <span style="color: #fb923c;">Tool</span>
+                            {% else %}
+                            <span style="color: #c4b5fd;">Malware</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'tools' %}?t={{ s.id }}" style="color: var(--text-accent); text-decoration: none;">
+                                {{ s.id }}
+                            </a>
+                        </td>
+                        <td>{{ s.name }}</td>
+                        <td>
+                            {% if s.techniques %}
+                            <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                {% for tech in s.techniques|slice:":3" %}
+                                <span class="tag tag-technique">{{ tech }}</span>
+                                {% endfor %}
+                                {% if s.techniques|length > 3 %}
+                                <span class="tag">+{{ s.techniques|length|add:"-3" }} more</span>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                        <td>{{ s.references|default:"—"|truncatechars:50 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-tools"></i>
+            <h3>No Techniques Data Available</h3>
+            <p>This group has no recorded techniques in MITRE ATT&CK</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function switchTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabName).classList.add('active');
+        
+        // Activate selected tab
+        document.querySelectorAll('.tab').forEach(tab => {
+            if (tab.textContent.includes(tabName.charAt(0).toUpperCase() + tabName.slice(1))) {
+                tab.classList.add('active');
+            }
+        });
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        // If no MITRE data, switch to MISP tab
+        if (!{{ has_mitre_data|yesno:"true,false" }} && {{ has_misp_data|yesno:"true,false" }}) {
+            switchTab('misp');
+        }
+    });
+</script>
+
+</body>
+</html>

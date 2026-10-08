@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ actor.name|default:"MISP Actor Details" }} - TIARF</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+
+        :root {
+            --bg-main: #0b0f14;
+            --bg-panel: #111827;
+            --bg-panel-2: #0f172a;
+            --bg-hover: #1e293b;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-accent: #60a5fa;
+            --border-subtle: #1f2937;
+            --danger: #ef4444;
+            --warning-bg: #3b2f13;
+            --warning-border: #92400e;
+            --success: #10b981;
+            --glow: 0 0 12px rgba(96,165,250,0.25);
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #020617, #0b0f14);
+            color: var(--text-main);
+        }
+        
+        .navbar {
+            height: 58px;
+            display: flex;
+            align-items: center;
+            background: #020617;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .navbar-brand {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .danger-dot { color: var(--danger); font-size: 14px; text-shadow: 0 0 6px rgba(239,68,68,0.7); }
+        
+        .navbar-nav { display: flex; gap: 18px; }
+        
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .nav-link:hover { color: var(--text-main); background: var(--bg-hover); box-shadow: var(--glow); }
+        
+        .nav-link i { font-size: 13px; color: var(--text-accent); }
+        
+        .content {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-accent);
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: var(--bg-panel);
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .back-link:hover { background: var(--bg-hover); }
+        
+        .actor-header {
+            background: var(--bg-panel);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .actor-header h1 {
+            margin: 0 0 10px 0;
+            color: var(--text-main);
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .actor-header .uuid {
+            color: var(--text-muted);
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: var(--bg-panel);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .info-card h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--text-accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+        }
+        
+        .info-card p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: var(--bg-panel-2);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+        }
+        
+        .tag-country { background: #172554; color: #93bbfc; border: 1px solid #1e40af; }
+        .tag-sector { background: #083344; color: #67e8f9; border: 1px solid #0891b2; }
+        .tag-synonym { background: #2d1b4e; color: #c4b5fd; border: 1px solid #9333ea; }
+        .tag-group { background: #451a03; color: #fb923c; border: 1px solid #f97316; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-panel);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        th {
+            background: var(--bg-panel-2);
+            color: var(--text-accent);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        tr:hover td { background: rgba(96,165,250,0.08); }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        
+        .no-data i { font-size: 48px; margin-bottom: 20px; }
+        
+        .alert-warning {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: #fbbf24;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .metadata-table {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .metadata-table pre {
+            background: var(--bg-panel-2);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            overflow-x: auto;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .section-header {
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-header h2 {
+            margin: 0;
+            color: var(--text-accent);
+            font-size: 24px;
+        }
+        
+        .group-link {
+            color: var(--text-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .group-link:hover {
+            text-decoration: underline;
+            text-shadow: var(--glow);
+        }
+        
+        .sophistication-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .level-advanced { background: #ef4444; color: white; }
+        .level-intermediate { background: #f97316; color: white; }
+        .level-novice, .level-basic { background: #22c55e; color: white; }
+        .level-strategic { background: #a78bfa; color: white; }
+        .level-unknown { background: #6b7280; color: white; }
+        
+        .ref-link {
+            color: var(--text-accent);
+            text-decoration: none;
+            font-size: 13px;
+            word-break: break-all;
+        }
+        
+        .ref-link:hover {
+            text-decoration: underline;
+        }
+
+        
+        .tag-victim { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
+        
+        .debug-info {
+            background: #1f2937;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <span class="danger-dot">●</span> ThreatCluster
+        </a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="{% url 'tools' %}"><i class="fas fa-database"></i> Tools</a>
+            <a class="nav-link" href="{% url 'groups' %}"><i class="fas fa-user-secret"></i> Groups</a>
+            <a class="nav-link" href="{% url 'actor_matching' %}"><i class="fas fa-robot"></i> Matching</a>
+            <a class="nav-link" href="{% url 'threat_dashboard' %}"><i class="fas fa-cog"></i> Actors</a>
+        </div>
+    </div>
+</nav>
+
+<div class="content">
+    <!-- Back link -->
+    <a href="{% url 'actor_matching' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Actor Matching
+    </a>
+    
+    {% if error %}
+    <div class="alert-warning">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    {% if actor %}
+    <!-- Actor Header -->
+    <div class="actor-header">
+        <h1>
+            <i class="fas fa-user-secret"></i> {{ actor.name }}
+            {% if actor.sophistication %}
+            <span class="sophistication-badge level-{{ actor.sophistication|lower }}">
+                {{ actor.sophistication }}
+            </span>
+            {% endif %}
+        </h1>
+      
+    </div>
+    
+    <!-- Description -->
+    {% if actor.description %}
+    <div class="section-header">
+        <h2><i class="fas fa-file-alt"></i> Description</h2>
+    </div>
+    <div class="info-card">
+        <p>{{ actor.description|linebreaks }}</p>
+    </div>
+    {% endif %}
+    
+    <!-- Basic Information Grid -->
+    <div class="section-header">
+        <h2><i class="fas fa-info-circle"></i> Basic Information</h2>
+    </div>
+    
+    <div class="info-grid">
+        <!-- Source Countries -->
+        <div class="info-card">
+            <h3><i class="fas fa-globe"></i> Geography</h3>
+            {% if actor.source_country_names %}
+            <p><strong>Source Countries:</strong></p>
+            <div class="tag-container">
+                {% for country in actor.source_country_names %}
+                <span class="tag tag-country">{{ country }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: var(--text-muted);">No source country information</p>
+            {% endif %}
+            
+            {% if actor.victim_countries %}
+            <p style="margin-top: 15px;"><strong>Victim Countries:</strong></p>
+            <div class="tag-container">
+                {% for country in actor.victim_countries %}
+                <span class="tag tag-victim">{{ country }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Target Sectors -->
+        <div class="info-card">
+            <h3><i class="fas fa-bullseye"></i> Targets</h3>
+            {% if actor.victim_sectors %}
+            <p><strong>Target Sectors:</strong></p>
+            <div class="tag-container">
+                {% for sector in actor.victim_sectors %}
+                <span class="tag tag-sector">{{ sector }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: var(--text-muted);">No target sector information</p>
+            {% endif %}
+        </div>
+        
+        <!-- Motivation & Sophistication -->
+        <div class="info-card">
+            <h3><i class="fas fa-user-tag"></i> Attributes</h3>
+            {% if actor.primary_motivation %}
+            <p><strong>Primary Motivation:</strong> {{ actor.primary_motivation }}</p>
+            {% endif %}
+            {% if actor.sophistication %}
+            <p><strong>Sophistication:</strong> {{ actor.sophistication }}</p>
+            {% endif %}
+            {% if actor.resource_level %}
+            <p><strong>Resource Level:</strong> {{ actor.resource_level }}</p>
+            {% endif %}
+            
+            <!-- Debug info -->
+            <div class="debug-info">
+                Data strings:<br>
+                Source: {{ actor.source_countries_str }}<br>
+                Victims: {{ actor.victim_countries_str }}<br>
+                Sectors: {{ actor.victim_sectors_str }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related MITRE Groups -->
+    {% if related_groups %}
+    <div class="section-header">
+        <h2><i class="fas fa-users"></i> Related MITRE Groups</h2>
+    </div>
+    <div class="info-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>MITRE ID</th>
+                    <th>Group Name</th>
+                    <th>Aliases</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in related_groups %}
+                <tr>
+                    <td>
+                        <a href="{% url 'group_detail' group.id %}" class="group-link">
+                            {{ group.id }}
+                        </a>
+                    </td>
+                    <td>{{ group.name }}</td>
+                    <td>
+                        {% if group.aliases %}
+                        {{ group.aliases|join:", " }}
+                        {% else %}
+                        <span style="color: var(--text-muted);">None</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    
+    <!-- Aliases/Synonyms -->
+    {% if actor.synonyms %}
+    <div class="section-header">
+        <h2><i class="fas fa-users"></i> Known Aliases</h2>
+    </div>
+    <div class="info-card">
+        <div class="tag-container">
+            {% for alias in actor.synonyms %}
+            <span class="tag tag-synonym">{{ alias }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- References -->
+    {% if actor.refs %}
+    <div class="section-header">
+        <h2><i class="fas fa-link"></i> References</h2>
+    </div>
+    <div class="info-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Reference URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ref in actor.refs %}
+                {% if ref %}
+                <tr>
+                    <td>
+                        {% if 'http://' in ref or 'https://' in ref %}
+                        <a href="{{ ref }}" target="_blank" class="ref-link">
+                            <i class="fas fa-external-link-alt"></i> {{ ref|truncatechars:80 }}
+                        </a>
+                        {% else %}
+                        {{ ref }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    
+    <!-- Full Metadata -->
+    <div class="section-header">
+        <h2><i class="fas fa-database"></i> Complete Metadata</h2>
+    </div>
+    <div class="info-card">
+        <div class="metadata-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in actor.meta.items %}
+                    <tr>
+                        <td style="width: 200px; vertical-align: top;">
+                            <strong>{{ key }}</strong>
+                        </td>
+                        <td>
+                            {% if value is None %}
+                            <span style="color: var(--text-muted);">null</span>
+                            {% elif value is mapping or value is sequence %}
+                            <pre style="max-height: 150px; overflow-y: auto;">{{ value|pprint }}</pre>
+                            {% elif value|length > 100 %}
+                            <pre style="max-height: 150px; overflow-y: auto;">{{ value|truncatechars:200 }}</pre>
+                            {% else %}
+                            {{ value }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="no-data">
+        <i class="fas fa-user-secret"></i>
+        <h3>No Actor Data Available</h3>
+        <p>Could not load actor details</p>
+    </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
