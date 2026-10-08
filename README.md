@@ -1,4 +1,4 @@
-# ThreatIntel
+<img width="1492" height="902" alt="TIARF5" src="https://github.com/user-attachments/assets/1a1f51bf-cd8b-4815-aadf-db2012fbfb10" /><img width="1862" height="900" alt="TIARF6" src="https://github.com/user-attachments/assets/1f181c9c-65a2-4f1b-92c2-36217bbec840" /># ThreatIntel
 
 ### Cyber Threat Intelligence & Analysis Platform
 
@@ -93,38 +93,15 @@ Expand a section to view its screenshot area. Screenshots will be added as the p
 <summary><strong>Dashboard - intelligence overview</strong></summary>
 
 Overview of collected intelligence, trends, and filtering controls.
-
-*Screenshot coming soon.*
-
-<!-- Replace the placeholder above with:
-![ThreatIntel dashboard showing intelligence trends and filters](docs/screenshots/dashboard.png)
--->
+<img width="1531" height="912" alt="TIARF1" src="https://github.com/user-attachments/assets/e8073436-a8af-4ba1-b62f-62149c311c38" />
 
 </details>
 
 <details>
-<summary><strong>Threat library - indicators and vulnerabilities</strong></summary>
-
-Explore IP addresses, URLs, malware records, and CVEs with supporting context.
-
-*Screenshot coming soon.*
-
-<!-- Replace the placeholder above with:
-![Threat library showing indicator records and filters](docs/screenshots/threat-library.png)
--->
-
-</details>
-
-<details>
-<summary><strong>Article analysis - intelligence in context</strong></summary>
+<summary><strong>AI-Summery and entities extraction</strong></summary>
 
 Read a collected article and inspect its analysis or generated summary.
-
-*Screenshot coming soon.*
-
-<!-- Replace the placeholder above with:
-![Article detail and intelligence analysis](docs/screenshots/article-analysis.png)
--->
+<img width="1831" height="899" alt="TIARF2" src="https://github.com/user-attachments/assets/7a4b90bf-ff25-40d5-a6d0-e280a3003614" />
 
 </details>
 
@@ -132,12 +109,9 @@ Read a collected article and inspect its analysis or generated summary.
 <summary><strong>Threat actors - profiles and attribution context</strong></summary>
 
 Browse actor profiles and review the information associated with an actor.
-
-*Screenshot coming soon.*
-
-<!-- Replace the placeholder above with:
-![Threat actor profile and associated intelligence](docs/screenshots/threat-actors.png)
--->
+<img width="1867" height="900" alt="TIARF3" src="https://github.com/user-attachments/assets/1594b512-6f27-4da8-884c-cce14434cd40" />
+<img width="1441" height="902" alt="TIARF4" src="https://github.com/user-attachments/assets/6ef3148e-68f1-45f8-a05b-0c4dd97c8d63" />
+<img width="1492" height="902" alt="TIARF5" src="https://github.com/user-attachments/assets/f4b70312-331b-43b0-bf10-2a5764f41b67" />
 
 </details>
 
@@ -145,12 +119,8 @@ Browse actor profiles and review the information associated with an actor.
 <summary><strong>MITRE ATT&CK - tactics and techniques</strong></summary>
 
 Explore ATT&CK data and open technique details for further investigation.
-
-*Screenshot coming soon.*
-
-<!-- Replace the placeholder above with:
-![MITRE ATT&CK dashboard with tactics and techniques](docs/screenshots/mitre-attack.png)
--->
+<img width="1079" height="906" alt="TIARF7" src="https://github.com/user-attachments/assets/8261595f-ff40-4de7-b99d-84db9d633042" />
+<img width="1083" height="870" alt="TIARF8" src="https://github.com/user-attachments/assets/831987fd-f17c-4427-a7c0-aa7af5e93437" />
 
 </details>
 
@@ -158,25 +128,21 @@ Explore ATT&CK data and open technique details for further investigation.
 <summary><strong>Groups and tools - adversary capabilities</strong></summary>
 
 Review adversary groups and the software or tools represented in ATT&CK data.
-
-*Screenshot coming soon.*
-
-<!-- Replace the placeholder above with:
-![Adversary groups and tools explorer](docs/screenshots/groups-and-tools.png)
--->
+<img width="1862" height="900" alt="TIARF6" src="https://github.com/user-attachments/assets/26c4b364-88de-4d4e-9380-332851f83e97" />
+<img width="1079" height="906" alt="TIARF7" src="https://github.com/user-attachments/assets/a59197c1-a289-4e4e-a759-99351497467e" />
+<img width="1507" height="913" alt="TIARF9" src="https://github.com/user-attachments/assets/f2c3ea2c-dd86-4903-b86b-6157148f3aec" />
+<img width="1078" height="799" alt="TIARF10" src="https://github.com/user-attachments/assets/d69c570e-2e7c-4a6b-bde2-99d2b83fcee0" />
+<img width="1471" height="862" alt="TIARF11" src="https://github.com/user-attachments/assets/fe008170-6c20-4d26-992e-39b1a829606c" />
 
 </details>
 
 <details>
-<summary><strong>Actor matching - MISP and MITRE connections</strong></summary>
+<summary><strong>Threat library - indicators and vulnerabilities</strong></summary>
 
-Inspect candidate matches and combined actor/group details.
-
-*Screenshot coming soon.*
-
-<!-- Replace the placeholder above with:
-![MISP and MITRE actor matching results](docs/screenshots/actor-matching.png)
--->
+Explore IP addresses, URLs, malware records, and CVEs with supporting context.
+<img width="1453" height="909" alt="TIARF12" src="https://github.com/user-attachments/assets/d5ee474a-dd6b-4f11-9769-cd0231984c1f" />
+<img width="1346" height="908" alt="TIARF13" src="https://github.com/user-attachments/assets/14f99361-05a4-4068-974d-146a00e8b995" />
+<img width="1342" height="879" alt="TIARF14" src="https://github.com/user-attachments/assets/cb5dcfa8-45ac-4e6f-b007-1004783041b5" />
 
 </details>
 
@@ -184,12 +150,6 @@ Inspect candidate matches and combined actor/group details.
 <summary><strong>Chatbot - conversational intelligence exploration</strong></summary>
 
 Ask supported threat intelligence questions through the chat interface.
-
-*Screenshot coming soon.*
-
-<!-- Replace the placeholder above with:
-![Threat intelligence chatbot conversation](docs/screenshots/chatbot.png)
--->
 
 </details>
 
